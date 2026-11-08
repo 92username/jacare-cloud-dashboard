@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jacaré Cloud — Console operacional</title>
+<meta name="description" content="Ponto único de acesso às aplicações web da plataforma Jacaré Cloud: TATIC Processor e Escala Automate.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#060b12">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+
+<header class="topbar">
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+      <path d="M6 34 L18 12 L24 22 L30 12 L42 34" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="24" cy="35.5" r="2.6" fill="currentColor"/>
+    </svg>
+    <span class="brand-name">JACARÉ<b>CLOUD</b></span>
+    <span class="brand-sub">console operacional</span>
+  </div>
+
+  <div class="topbar-meta">
+    <span class="meta-label">HORA LOCAL</span>
+    <span class="clock" id="relogio-local">--:--:--</span>
+    <span class="meta-sep" aria-hidden="true"></span>
+    <span class="meta-label">UTC</span>
+    <span class="clock clock-utc" id="relogio-utc">--:--:--</span>
+    <span class="tag-version">v1.0</span>
+  </div>
+</header>
+
+<main id="conteudo">
+
+  <section class="hero" aria-labelledby="titulo">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">
+          <span class="eyebrow-dot" aria-hidden="true"></span>
+          Plataforma tecnológica independente
+        </p>
+        <h1 id="titulo">Centro de operações <span class="accent">Jacaré Cloud</span></h1>
+        <p class="lede">
+          Ponto único de acesso às aplicações web mantidas nesta infraestrutura.
+          Selecione um sistema para iniciar o trabalho.
+        </p>
+      </div>
+
+      <div class="hero-panel" aria-hidden="true">
+        <svg class="radar" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+          <g fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.35">
+            <circle cx="100" cy="100" r="78"/>
+            <circle cx="100" cy="100" r="55"/>
+            <circle cx="100" cy="100" r="32"/>
+            <line x1="100" y1="12" x2="100" y2="188"/>
+            <line x1="12" y1="100" x2="188" y2="100"/>
+            <line x1="38" y1="38" x2="162" y2="162" stroke-dasharray="3 6"/>
+            <line x1="162" y1="38" x2="38" y2="162" stroke-dasharray="3 6"/>
+          </g>
+          <g class="radar-sweep">
+            <path d="M100 100 L100 22 A78 78 0 0 1 155 45 Z" fill="url(#feixe)" opacity="0.5"/>
+          </g>
+          <defs>
+            <linearGradient id="feixe" x1="100" y1="100" x2="155" y2="45" gradientUnits="userSpaceOnUse">
+              <stop class="feixe-a" offset="0"/>
+              <stop class="feixe-b" offset="1"/>
+            </linearGradient>
+          </defs>
+          <circle cx="100" cy="100" r="3" fill="currentColor"/>
+        </svg>
+        <span class="radar-label">SBJR · 22°59'S 43°22'W</span>
+      </div>
+    </div>
+
+    <dl class="readouts">
+      <div class="readout">
+        <dt>Sistemas publicados</dt>
+        <dd>02</dd>
+      </div>
+      <div class="readout">
+        <dt>Protocolo de acesso</dt>
+        <dd>HTTPS</dd>
+      </div>
+      <div class="readout">
+        <dt>Verificação de disponibilidade</dt>
+        <dd>A cada carregamento</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="section" aria-labelledby="titulo-sistemas">
+    <div class="section-head">
+      <h2 id="titulo-sistemas">Sistemas disponíveis</h2>
+      <p class="section-note">Aplicações em operação nesta infraestrutura</p>
+    </div>
+
+    <div class="cards">
+
+      <article class="card" aria-labelledby="card-tatic">
+        <div class="card-top">
+          <span class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 2.5 L20 7 v10 L12 21.5 L4 17 V7 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M7.5 12.2 l3 3 l6-6.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <div class="card-titles">
+            <p class="card-kicker">PROCESSAMENTO</p>
+            <h3 id="card-tatic">TATIC Processor</h3>
+          </div>
+          <span class="chip chip-live" data-servico="tatic">verificando</span>
+        </div>
+
+        <p class="card-desc">
+          Aplicação web de processamento de dados do sistema TATIC, mantida como
+          serviço independente nesta infraestrutura.
+        </p>
+
+        <ul class="card-tags">
+          <li>Web app</li>
+          <li>Processamento de dados</li>
+          <li>HTTPS</li>
+        </ul>
+
+        <div class="card-actions">
+          <a class="btn btn-primary" href="https://tatic.jacare.cloud" rel="noopener">
+            Abrir aplicação
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 12 L12 4 M6 4 h6 v6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a class="btn btn-ghost" href="https://tatic.jacare.cloud" rel="noopener noreferrer" target="_blank">Abrir em nova aba</a>
+        </div>
+      </article>
+
+      <article class="card" aria-labelledby="card-escala">
+        <div class="card-top">
+          <span class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <rect x="3.5" y="5" width="17" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M3.5 9.5 h17 M8 3v4 M16 3v4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M7.5 13h4 M7.5 16.5h7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <div class="card-titles">
+            <p class="card-kicker">AUTOMAÇÃO</p>
+            <h3 id="card-escala">Escala Automate</h3>
+          </div>
+          <span class="chip chip-live" data-servico="escala">verificando</span>
+        </div>
+
+        <p class="card-desc">
+          Aplicação para automação e consulta de escalas de serviço. O acesso é
+          protegido por autenticação própria do serviço.
+        </p>
+
+        <ul class="card-tags">
+          <li>Web app</li>
+          <li>Automação de escala</li>
+          <li>Acesso restrito</li>
+        </ul>
+
+        <div class="card-actions">
+          <a class="btn btn-primary" href="https://escala.jacare.cloud" rel="noopener">
+            Abrir aplicação
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 12 L12 4 M6 4 h6 v6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a class="btn btn-ghost" href="https://escala.jacare.cloud" rel="noopener noreferrer" target="_blank">Abrir em nova aba</a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="titulo-disponibilidade">
+    <div class="section-head">
+      <h2 id="titulo-disponibilidade">Disponibilidade dos serviços</h2>
+      <button class="btn btn-small" type="button" id="reverificar">Verificar novamente</button>
+    </div>
+
+    <p class="hint">
+      A verificação é feita pelo seu navegador, no momento em que esta página é aberta,
+      por meio de uma requisição direta a cada endereço. O resultado indica apenas se o
+      servidor respondeu à requisição — não atesta a integridade interna das aplicações
+      nem substitui monitoramento contínuo. Nenhum indicador histórico é exibido.
+    </p>
+
+    <noscript>
+      <p class="hint no-js">
+        A verificação automática de disponibilidade depende de JavaScript e está
+        desativada neste navegador. Os estados abaixo não foram medidos.
+      </p>
+    </noscript>
+
+    <div class="status-list" id="lista-status" aria-live="polite">
+
+      <div class="status-row" data-url="https://jacare.cloud" data-nome="jacare.cloud">
+        <span class="status-name">
+          jacare.cloud
+          <span class="status-role">este site</span>
+        </span>
+        <span class="status-latency" data-campo="latencia">—</span>
+        <span class="chip chip-wait" data-campo="estado">verificando</span>
+      </div>
+
+      <div class="status-row" data-url="https://tatic.jacare.cloud" data-nome="tatic.jacare.cloud" data-servico="tatic">
+        <span class="status-name">
+          tatic.jacare.cloud
+          <span class="status-role">TATIC Processor</span>
+        </span>
+        <span class="status-latency" data-campo="latencia">—</span>
+        <span class="chip chip-wait" data-campo="estado">verificando</span>
+      </div>
+
+      <div class="status-row" data-url="https://escala.jacare.cloud" data-nome="escala.jacare.cloud" data-servico="escala">
+        <span class="status-name">
+          escala.jacare.cloud
+          <span class="status-role">Escala Automate · acesso restrito</span>
+        </span>
+        <span class="status-latency" data-campo="latencia">—</span>
+        <span class="chip chip-wait" data-campo="estado">verificando</span>
+      </div>
+
+    </div>
+
+    <p class="timestamp">
+      Última verificação: <span id="hora-verificacao">aguardando</span>
+    </p>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-top">
+    <span class="brand-name small">JACARÉ<b>CLOUD</b></span>
+    <span class="footer-version">versão 1.0</span>
+  </div>
+  <p class="footer-text">
+    O Jacaré Cloud é uma <strong>plataforma tecnológica independente</strong>, de caráter
+    pessoal e experimental, sem vínculo institucional, patrocínio ou representação de
+    quaisquer órgãos, empresas ou entidades públicas ou privadas.
+  </p>
+  <p class="footer-text muted">
+    Interface construída em HTML, CSS e JavaScript puro. Sem bibliotecas externas, sem
+    rastreadores e sem chamadas a APIs de terceiros. Não são exibidas informações
+    sensíveis, endereços internos ou métricas privadas.
+  </p>
+  <p class="footer-bottom">
+    <span>© <span id="ano">2026</span> Jacaré Cloud</span>
+    <span class="footer-sep" aria-hidden="true">·</span>
+    <span>Uso sob responsabilidade do operador</span>
+  </p>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

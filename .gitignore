@@ -1,0 +1,9 @@
+# artefatos locais
+*.bak-*
+*.log
+__pycache__/
+.DS_Store
+
+# preview local (python -m http.server)
+.venv/
+node_modules/
