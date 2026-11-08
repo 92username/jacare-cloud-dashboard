@@ -1,42 +1,70 @@
-# Jacaré Cloud — Dashboard v1.0 · plano de deploy (NÃO EXECUTADO)
+# Jacaré Cloud — deploy do dashboard v1.0 + módulo METAR (NÃO EXECUTADO)
 
 Status: **aguardando autorização explícita do usuário.**
-Build validado localmente e staged em `/tmp/jacare-dashboard-v1` (VPS), fora do diretório web.
+Build validado e staged em `/tmp/jacare-dashboard-v1` e `/tmp/jacare-metar-v1` (VPS), fora do
+diretório web. A página pública segue no placeholder original.
 
 ## Estado atual de produção (verificado em 07/11/2026)
 
 | Item | Valor verificado |
 |---|---|
 | Diretório web | `/var/www/jacare.cloud` (root:root, 755) |
-| Conteúdo | `index.html` (1184 B, placeholder) + `index.html.backup` (1184 B, idêntico) |
+| Conteúdo | `index.html` (1.184 B, placeholder) + `index.html.backup` (1.184 B, idêntico) |
 | Nginx | `sites-enabled/jacare.cloud.conf` → `sites-available`, `nginx -t` OK |
 | Server block | `root /var/www/jacare.cloud`, `try_files $uri $uri/ =404`, TLS Certbot |
 | HTTP | `https://jacare.cloud` → 200 |
-| Apps | TATIC (container `atc-cap-v2-streamlit-app-1`, 200) e Escala (`automate-escala-vigor-*`, 401 por Basic Auth) — **não serão tocados** |
+| Apps | TATIC (`atc-cap-v2-streamlit-app-1`, 200) e Escala (`automate-escala-vigor-*`, 401 Basic Auth) — **não serão tocados** |
+| Sistema | Ubuntu 22.04.5, Python 3.10.12, systemd 249, tzdata 2026e |
+
+## Componentes a publicar
+
+| Destino | Origem | Função |
+|---|---|---|
+| `/var/www/jacare.cloud/index.html` | `dashboard-v1/index.html` | página pública |
+| `/var/www/jacare.cloud/assets/*` | `dashboard-v1/assets/*` | CSS, JS (app + metar), favicon |
+| `/var/www/jacare.cloud/data/metar.json` | gerado pelo coletor | dado lido pela página |
+| `/opt/jacare-metar/collect.py` | `metar/collect.py` | coletor (fora da raiz web) |
+| `/var/lib/jacare-metar/` | criado (700) | cópia privada da última observação válida |
+| `/etc/systemd/system/jacare-metar.service` | `systemd/jacare-metar.service` | execução da coleta |
+| `/etc/systemd/system/jacare-metar.timer` | `systemd/jacare-metar.timer` | agenda 06:20–22:05 BRT |
 
 ## Passos propostos (somente após autorização)
 
-1. Backup com data, preservando o backup existente:
-   `sudo cp -a /var/www/jacare.cloud/index.html /var/www/jacare.cloud/index.html.bak-<timestamp>`
-2. Copiar o build staged para o diretório web (sem tocar em configs):
-   `sudo rsync -a --exclude 'index.html.bak-*' /tmp/jacare-dashboard-v1/ /var/www/jacare.cloud/`
-3. Ajustar propriedade e permissões: `sudo chown -R root:root /var/www/jacare.cloud`, arquivos 644, diretórios 755.
-4. **Nenhum** reload de Nginx, alteração de Certbot, firewall, SSH, Docker ou containers.
-5. Verificação pós-deploy (real, não presumida):
-   - `curl -I https://jacare.cloud` → 200
-   - `curl -I https://jacare.cloud/assets/styles.css` e `/assets/app.js` → 200
-   - abrir `https://jacare.cloud` e conferir os 3 estados de disponibilidade e os 4 links
-   - conferir layout em 1440 / 1024 / 390 px
+1. Backup do diretório web, preservando o backup existente:
+   `sudo cp -a /var/www/jacare.cloud /var/www/jacare.cloud.bak-<timestamp>`
+2. Publicar a interface: `sudo rsync -a --exclude 'data/' /tmp/jacare-dashboard-v1/ /var/www/jacare.cloud/`
+3. Instalar o coletor em `/opt/jacare-metar/collect.py` (root, 755) e criar
+   `/var/lib/jacare-metar` (700).
+4. Instalar as units em `/etc/systemd/system/`, `systemctl daemon-reload`,
+   `systemctl enable --now jacare-metar.timer`.
+5. Primeira coleta manual: `systemctl start jacare-metar.service`; conferir
+   `journalctl -u jacare-metar -n 20` e `data/metar.json`.
+6. Propriedade/permissões: `chown -R root:root /var/www/jacare.cloud`, arquivos 644, diretórios 755.
+7. **Nenhum** reload de Nginx, alteração de Certbot, firewall, SSH, Docker ou containers.
 
-## Rollback (segundos, sem downtime de configuração)
+## Verificação pós-deploy (real, não presumida)
+
+- `curl -I https://jacare.cloud` → 200; `/assets/styles.css`, `/assets/app.js`,
+  `/assets/metar.js` e `/data/metar.json` → 200
+- página: cards, seção METAR com a observação do momento, estados de disponibilidade
+- layout em 1440 / 1024 / 390 px
+- `systemctl list-timers jacare-metar.timer` coerente com a agenda
+- `systemd-analyze calendar` das expressões do timer: 33 execuções/dia, 06:20 → 22:05
+
+## Rollback (segundos)
 
 ```
-sudo cp -a /var/www/jacare.cloud/index.html.bak-<timestamp> /var/www/jacare.cloud/index.html
+sudo systemctl disable --now jacare-metar.timer
+sudo rm -f /etc/systemd/system/jacare-metar.service /etc/systemd/system/jacare-metar.timer
+sudo systemctl daemon-reload
+sudo rm -rf /opt/jacare-metar /var/www/jacare.cloud/data
+sudo rsync -a --delete /var/www/jacare.cloud.bak-<timestamp>/ /var/www/jacare.cloud/
 ```
 `index.html.backup` original permanece intacto como segunda via.
 
 ## O que NÃO está no deploy
 
-- Nenhuma chamada a API externa, CDN, fonte remota ou rastreamento.
-- Nenhum IP, porta, hostname interno, métrica privada ou credencial no frontend.
+- Nenhuma consulta feita pelo navegador a API externa: o frontend lê apenas `/data/metar.json`.
+- Nenhum IP, porta, hostname interno, caminho de servidor, métrica privada ou credencial no frontend.
 - Nenhuma alteração em TATIC Processor, Escala Automate, Docker, Nginx, Certbot, firewall ou SSH.
+- Nenhum pacote instalado: apenas Python 3 da distribuição e systemd.

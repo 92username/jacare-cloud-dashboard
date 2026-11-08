@@ -1,0 +1,33 @@
+[Unit]
+Description=Jacare Cloud - coleta METAR SBJR
+Documentation=https://jacare.cloud
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/jacare-metar/collect.py
+User=root
+Group=root
+# --- endurecimento ---
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+RestrictAddressFamilies=AF_INET AF_INET6
+RestrictNamespaces=yes
+RestrictRealtime=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+ReadWritePaths=/var/www/jacare.cloud/data /var/lib/jacare-metar
+UMask=0022
+TimeoutStartSec=60
+
+[Install]
+WantedBy=multi-user.target

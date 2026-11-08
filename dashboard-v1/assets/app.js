@@ -45,7 +45,7 @@
   var LIMITE_MS = 10000;
   var TEXTO = {
     espera: 'verificando',
-    ok: 'respondeu',
+    ok: 'online',
     falha: 'sem resposta'
   };
 

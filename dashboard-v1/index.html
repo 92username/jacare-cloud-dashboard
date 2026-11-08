@@ -44,8 +44,8 @@
         </p>
         <h1 id="titulo">Centro de operações <span class="accent">Jacaré Cloud</span></h1>
         <p class="lede">
-          Ponto único de acesso às aplicações web mantidas nesta infraestrutura.
-          Selecione um sistema para iniciar o trabalho.
+          Ponto único de acesso às aplicações.
+          METAR Disponível
         </p>
       </div>
 
@@ -120,9 +120,9 @@
         </p>
 
         <ul class="card-tags">
-          <li>Web app</li>
+          <li>MCA 100-16</li>
           <li>Processamento de dados</li>
-          <li>HTTPS</li>
+          <li>acesso restrito</li>
         </ul>
 
         <div class="card-actions">
@@ -173,6 +173,84 @@
     </div>
   </section>
 
+  <section class="section" aria-labelledby="titulo-metar">
+    <div class="section-head">
+      <h2 id="titulo-metar">Meteorologia — METAR</h2>
+      <p class="section-note">Jacarepaguá · SBJR</p>
+    </div>
+
+    <div class="metar" id="metar">
+
+      <div class="metar-head">
+        <div class="metar-station">
+          <span class="metar-icao">SBJR</span>
+          <span class="metar-nome">Jacarepaguá — Rio de Janeiro</span>
+        </div>
+        <div class="metar-flags">
+          <span class="chip chip-wait" id="metar-estado">consultando</span>
+          <span class="metar-idade" id="metar-idade">—</span>
+        </div>
+      </div>
+
+      <p class="metar-aviso" id="metar-aviso" hidden></p>
+
+      <div class="metar-corpo">
+        <div class="metar-bruto-bloco">
+          <p class="metar-rotulo">Observação bruta</p>
+          <p class="metar-bruto" id="metar-bruto">aguardando dados…</p>
+          <div class="metar-datas">
+            <span class="metar-data"><span class="metar-data-rotulo">Observação</span>
+              <strong id="metar-obs-brt">—</strong> BRT
+              <span class="metar-data-utc">(<span id="metar-obs-utc">—</span> UTC)</span>
+            </span>
+            <span class="metar-data"><span class="metar-data-rotulo">Coleta</span>
+              <strong id="metar-coleta-brt">—</strong> BRT
+              <span class="metar-data-utc">(<span id="metar-coleta-utc">—</span> UTC)</span>
+            </span>
+          </div>
+        </div>
+
+        <dl class="metar-grid">
+          <div class="metar-item">
+            <dt>Vento</dt>
+            <dd id="metar-vento">—</dd>
+          </div>
+          <div class="metar-item">
+            <dt>Visibilidade</dt>
+            <dd id="metar-visibilidade">—</dd>
+          </div>
+          <div class="metar-item">
+            <dt>Temperatura</dt>
+            <dd id="metar-temperatura">—</dd>
+          </div>
+          <div class="metar-item">
+            <dt>Ponto de orvalho</dt>
+            <dd id="metar-orvalho">—</dd>
+          </div>
+          <div class="metar-item">
+            <dt>QNH</dt>
+            <dd id="metar-qnh">—</dd>
+          </div>
+          <div class="metar-item">
+            <dt>Condições</dt>
+            <dd id="metar-condicoes">—</dd>
+          </div>
+          <div class="metar-item metar-item-larga">
+            <dt>Nebulosidade</dt>
+            <dd id="metar-nuvens">—</dd>
+          </div>
+        </dl>
+      </div>
+
+      <p class="metar-disclaimer">
+        <strong>Dados informativos.</strong> Observação automática de estação, exibida para
+        acompanhamento. Não substitui as fontes aeronáuticas oficiais nem deve ser usada
+        para decisão operacional de voo. Fonte: Aviation Weather Center (NOAA/NWS).
+      </p>
+
+    </div>
+  </section>
+
   <section class="section" aria-labelledby="titulo-disponibilidade">
     <div class="section-head">
       <h2 id="titulo-disponibilidade">Disponibilidade dos serviços</h2>
@@ -194,15 +272,6 @@
     </noscript>
 
     <div class="status-list" id="lista-status" aria-live="polite">
-
-      <div class="status-row" data-url="https://jacare.cloud" data-nome="jacare.cloud">
-        <span class="status-name">
-          jacare.cloud
-          <span class="status-role">este site</span>
-        </span>
-        <span class="status-latency" data-campo="latencia">—</span>
-        <span class="chip chip-wait" data-campo="estado">verificando</span>
-      </div>
 
       <div class="status-row" data-url="https://tatic.jacare.cloud" data-nome="tatic.jacare.cloud" data-servico="tatic">
         <span class="status-name">
@@ -249,5 +318,6 @@
 </footer>
 
 <script src="assets/app.js"></script>
+<script src="assets/metar.js"></script>
 </body>
 </html>

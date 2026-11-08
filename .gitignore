@@ -7,3 +7,6 @@ __pycache__/
 # preview local (python -m http.server)
 .venv/
 node_modules/
+
+# dado gerado pelo coletor METAR (nunca versionado nem publicado a partir do repo)
+dashboard-v1/data/
