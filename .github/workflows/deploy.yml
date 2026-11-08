@@ -75,6 +75,7 @@ jobs:
       - name: Conferir o site publicado
         run: |
           set -uo pipefail
+          set +e   # o runner executa o passo com bash -e: sem isso, o curl que falha aborta antes do if
           url=https://jacare.cloud/
           local_sha=$(sha256sum dashboard-v1/index.html | cut -d' ' -f1)
           for tentativa in 1 2 3 4 5; do
