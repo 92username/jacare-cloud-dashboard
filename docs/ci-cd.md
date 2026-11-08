@@ -20,6 +20,27 @@ push na main
 
 `workflow_dispatch` permite disparar o mesmo pipeline à mão (Actions → Deploy jacare.cloud → Run workflow).
 
+## O que dispara e o que não dispara
+
+| Ação no Git | Roda pipeline? | Muda o site? |
+|---|---|---|
+| commit + push na `main` | sim (~40 s) | sim, se você mexeu em `dashboard-v1/index.html` ou `dashboard-v1/assets/*` |
+| push em outra branch | não | não |
+| abrir/atualizar PR | não (não há gatilho de `pull_request`) | não |
+| merge de PR na `main` | sim | sim |
+| mexer em `README.md`, `docs/`, `metar/`, `systemd/`, `deploy/` | sim | não (o pipeline republica o site como está; coletor e units não são tocados) |
+| commitar algo em `dashboard-v1/data/` | sim, mas o arquivo é ignorado pelo `.gitignore` | não |
+
+Vários commits empurrados de uma vez geram um único run, já com o estado final da `main`
+(`concurrency` não cancela runs em andamento: eles entram na fila).
+
+Se a validação falhar, o job de publicação é **pulado** e o site continua servindo a versão
+anterior — a falha aparece no run e no histórico do Actions.
+
+A conferência externa (último passo) repete a checagem até 5 vezes; se o runner não conseguir
+resolver DNS, ele emite aviso em vez de marcar como falha um deploy que o servidor já validou
+byte a byte.
+
 ## O que o deploy na VPS faz
 
 `/usr/local/bin/jacare-deploy.sh` (root:root 755, versionado em `deploy/jacare-deploy.sh`):
