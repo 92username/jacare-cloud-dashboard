@@ -1,81 +1,91 @@
 # Jacaré Cloud — dashboard operacional
 
-Página pública de https://jacare.cloud: console com os cards de acesso ao
-TATIC Processor e ao Escala Automate e verificação real de disponibilidade
-feita pelo navegador.
+Página pública do **Jacaré Cloud**: um console web, em tema escuro com inspiração em
+interfaces de monitoramento aeronáutico, que reúne o acesso às aplicações da plataforma e
+mostra a observação METAR da estação SBJR (Jacarepaguá, Rio de Janeiro).
+
+Publicado em <https://jacare.cloud>.
+
+## O que tem na página
+
+- **Cards dos sistemas** — TATIC Processor e Escala Automate, com descrição e botões de acesso.
+- **Meteorologia — METAR** — observação bruta, horário em BRT e UTC, vento, visibilidade,
+  temperatura, ponto de orvalho, QNH, condições e nebulosidade.
+- **Disponibilidade** — verificação feita pelo navegador no carregamento da página; o
+  resultado diz apenas se o endereço respondeu, não atesta a saúde interna das aplicações.
+- **Rodapé** — aviso de plataforma tecnológica independente e de dados informativos.
+
+Interface em português brasileiro e inglês, com seletor de idioma. HTML5, CSS3 e
+JavaScript puro: sem frameworks, sem bibliotecas, sem fontes remotas, sem rastreadores.
 
 ## Estrutura
 
 ```
-dashboard-v1/          # raiz publicável (é o que vai para /var/www/jacare.cloud)
+dashboard-v1/          # raiz publicável do site
   index.html
   assets/
-    styles.css
-    app.js
-    metar.js
+    styles.css         # tema, layout responsivo
+    app.js             # idioma, relógio, disponibilidade
+    metar.js           # render da seção METAR
     favicon.svg
-  data/                # gerado pelo coletor (fora do versionamento)
-metar/collect.py       # coletor METAR SBJR (Python 3, biblioteca padrão)
+metar/collect.py       # coletor METAR (Python 3, biblioteca padrão)
 systemd/               # jacare-metar.service e jacare-metar.timer
-tools/validate.py      # validador local (estrutura, acessibilidade, segurança)
-DEPLOY.md              # plano de deploy e rollback
+tools/validate.py      # validador de HTML (estrutura, acessibilidade, segurança)
+docs/deploy.md         # como publicar
 ```
 
-## Restrições do projeto
-
-- HTML5, CSS3 e JavaScript puro. Nenhuma biblioteca, fonte remota ou CDN.
-- Nenhuma chamada a API externa, rastreador ou credencial no frontend.
-- Não altera Nginx, Certbot, firewall, SSH, Docker nem as aplicações TATIC/Escala.
-- Nenhum IP, porta administrativa ou métrica privada na interface.
-
-## Desenvolvimento local
+## Rodar localmente
 
 ```
 cd dashboard-v1 && python3 -m http.server 8099 --bind 127.0.0.1
-# http://127.0.0.1:8099
 ```
 
-## Validação
+A seção METAR lê `data/metar.json`. Sem esse arquivo a página mostra o estado "sem dados" —
+o que é o comportamento esperado antes da primeira coleta.
+
+## Módulo METAR
+
+O coletor consulta o [Aviation Weather Center](https://aviationweather.gov/) e grava um JSON
+com a última observação válida, usando escrita atômica.
 
 ```
+python3 metar/collect.py --saida dashboard-v1/data/metar.json --estado /tmp/ultima.json
+```
+
+Agenda padrão (`systemd/jacare-metar.timer`): a cada 30 minutos, de 06:20 a 21:50, mais uma
+coleta às 22:05, no fuso `America/Sao_Paulo`. Não há coleta entre 22:06 e 05:59.
+
+Regras de robustez:
+
+- HTTP 200 não é tratado como observação recente: a idade vem do horário da observação e,
+  acima de 90 minutos, a interface marca "desatualizada".
+- Falha de rede, JSON inválido ou lista vazia preservam a última observação válida e
+  registram o erro no journal, com mensagem neutra no arquivo público.
+- O JSON publicado não contém caminho de servidor, host, IP nem stack trace.
+- O navegador lê apenas o JSON local; nenhuma API externa é chamada pelo frontend.
+
+Testes, sem rede:
+
+```
+python3 metar/collect.py --autoteste
 python3 tools/validate.py dashboard-v1
 node --check dashboard-v1/assets/app.js
 ```
 
-Validação de layout feita no Chromium em 1440, 1024 e 390 px (sem overflow
-horizontal, sem erros de console, alvos de toque com no mínimo 40-44 px).
+## Publicar
 
-## Disponibilidade
+Ver [docs/deploy.md](docs/deploy.md). Nada é publicado automaticamente; o coletor roda por
+timer do systemd no servidor.
 
-A seção de disponibilidade mede, no carregamento da página, se cada endereço
-responde a uma requisição do próprio navegador. O resultado `respondeu`
-significa apenas que o servidor respondeu à requisição — não atesta a saúde
-interna das aplicações nem substitui monitoramento contínuo.
+## Aviso
 
-## Meteorologia — METAR SBJR
+Os dados meteorológicos exibidos são **informativos** e não substituem as fontes
+aeronáuticas oficiais nem devem ser usados para decisão operacional de voo.
 
-O coletor (`metar/collect.py`) consulta o Aviation Weather Center a cada 30 minutos,
-de 06:20 a 21:50, mais uma coleta às 22:05 (BRT). Não há coleta entre 22:06 e 05:59.
-Grava `dashboard-v1/data/metar.json` com escrita atômica (arquivo temporário + `os.replace`
-+ `fsync`), preservando a última observação válida em `/var/lib/jacare-metar/`.
+O Jacaré Cloud é uma plataforma tecnológica independente, de caráter pessoal e experimental,
+sem vínculo institucional, patrocínio ou representação de quaisquer órgãos, empresas ou
+entidades públicas ou privadas.
 
-Regras implementadas:
+## Licença
 
-- HTTP 200 não é tratado como observação recente: a idade é calculada a partir do
-  horário da observação e a interface marca "desatualizada" acima de 90 minutos.
-- Falha de rede, JSON inválido ou lista vazia preservam a observação anterior e
-  registram o erro no journal (`journalctl -u jacare-metar`), com mensagem neutra no JSON.
-- O JSON público contém apenas dado meteorológico: sem caminho, host, IP ou stack trace.
-- O navegador lê somente o JSON local; nenhuma API externa é chamada pelo frontend.
-
-Estados exibidos na página: `atualizada`, `desatualizada`, `sem dados`, além do aviso de
-coleta noturna suspensa e do aviso de falha na última coleta.
-
-Testes, sem rede: `python3 metar/collect.py --autoteste` (34 verificações: análise do METAR
-bruto, CAVOK, vento calmo/variável/com rajada, QNH, nebulosidade, escrita atômica,
-preservação em falha, ausência de dado interno no JSON).
-
-## Deploy
-
-Ver `DEPLOY.md`. Deploy só com autorização explícita; backup do `index.html`
-anterior é obrigatório antes de qualquer cópia.
+GNU General Public License v3.0 ou posterior — ver [LICENSE](LICENSE).
