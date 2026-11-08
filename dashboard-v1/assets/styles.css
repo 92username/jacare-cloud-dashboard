@@ -700,8 +700,6 @@ h2::before {
 
 .footer-text strong { color: var(--texto-suave); font-weight: 600; }
 
-.footer-text.muted { color: var(--texto-fraco); }
-
 .footer-bottom {
   display: flex;
   flex-wrap: wrap;
