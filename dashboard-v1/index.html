@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Jacaré Cloud — Console operacional</title>
-<meta name="description" content="Ponto único de acesso às aplicações web da plataforma Jacaré Cloud: TATIC Processor e Escala Automate.">
+<meta name="description" content="Ponto único de acesso às aplicações web da plataforma Jacaré Cloud: TATIC Processor e Escala Automate." id="meta-description">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#060b12">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
-<a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+<a class="skip-link" href="#conteudo" data-i18n="skip">Ir para o conteúdo</a>
 
 <header class="topbar">
   <div class="brand">
@@ -20,16 +20,27 @@
       <circle cx="24" cy="35.5" r="2.6" fill="currentColor"/>
     </svg>
     <span class="brand-name">JACARÉ<b>CLOUD</b></span>
-    <span class="brand-sub">console operacional</span>
+    <span class="brand-sub" data-i18n="brand.sub">console operacional</span>
   </div>
 
-  <div class="topbar-meta">
-    <span class="meta-label">HORA LOCAL</span>
+  <div class="topbar-tools">
+    <div class="topbar-meta">
+    <span class="meta-label" data-i18n="clock.local">HORA LOCAL</span>
     <span class="clock" id="relogio-local">--:--:--</span>
     <span class="meta-sep" aria-hidden="true"></span>
-    <span class="meta-label">UTC</span>
+    <span class="meta-label" data-i18n="clock.utc">UTC</span>
     <span class="clock clock-utc" id="relogio-utc">--:--:--</span>
     <span class="tag-version">v1.0</span>
+    </div>
+    <div class="language-switcher" role="group" aria-label="Idioma">
+      <span class="sr-only" data-i18n="language.label">Idioma</span>
+      <button class="language-button" type="button" data-language="pt-BR" aria-pressed="true" aria-label="Português brasileiro">
+        <span aria-hidden="true">🇧🇷</span><span>BR</span>
+      </button>
+      <button class="language-button" type="button" data-language="en" aria-pressed="false" aria-label="Inglês">
+        <span aria-hidden="true">🇬🇧</span><span>ENG</span>
+      </button>
+    </div>
   </div>
 </header>
 
@@ -40,13 +51,9 @@
       <div class="hero-copy">
         <p class="eyebrow">
           <span class="eyebrow-dot" aria-hidden="true"></span>
-          Plataforma tecnológica independente
+          <span data-i18n="hero.eyebrow">Plataforma tecnológica independente</span>
         </p>
-        <h1 id="titulo">Centro de operações <span class="accent">Jacaré Cloud</span></h1>
-        <p class="lede">
-          Ponto único de acesso às aplicações.
-          METAR Disponível
-        </p>
+        <h1 id="titulo"><span id="titulo-prefixo" data-i18n="hero.title">Centro de operações</span> <span class="accent">Jacaré Cloud</span></h1>
       </div>
 
       <div class="hero-panel" aria-hidden="true">
@@ -74,27 +81,11 @@
         <span class="radar-label">SBJR · 22°59'S 43°22'W</span>
       </div>
     </div>
-
-    <dl class="readouts">
-      <div class="readout">
-        <dt>Sistemas publicados</dt>
-        <dd>02</dd>
-      </div>
-      <div class="readout">
-        <dt>Protocolo de acesso</dt>
-        <dd>HTTPS</dd>
-      </div>
-      <div class="readout">
-        <dt>Verificação de disponibilidade</dt>
-        <dd>A cada carregamento</dd>
-      </div>
-    </dl>
   </section>
 
   <section class="section" aria-labelledby="titulo-sistemas">
     <div class="section-head">
-      <h2 id="titulo-sistemas">Sistemas disponíveis</h2>
-      <p class="section-note">Aplicações em operação nesta infraestrutura</p>
+      <h2 id="titulo-sistemas" data-i18n="systems.title">Sistemas disponíveis</h2>
     </div>
 
     <div class="cards">
@@ -108,29 +99,29 @@
             </svg>
           </span>
           <div class="card-titles">
-            <p class="card-kicker">PROCESSAMENTO</p>
+            <p class="card-kicker" data-i18n="cards.processing">PROCESSAMENTO</p>
             <h3 id="card-tatic">TATIC Processor</h3>
           </div>
-          <span class="chip chip-live" data-servico="tatic">verificando</span>
+          <span class="chip chip-live" data-servico="tatic" data-i18n="availability.checking" data-i18n-dynamic>verificando</span>
         </div>
 
         <p class="card-desc">
-          Aplicação web de processamento de dados do sistema TATIC, mantida como
-          serviço independente nesta infraestrutura.
+          <span data-i18n="cards.tatic.description">Aplicação web de processamento de dados do sistema TATIC, mantida como
+          serviço independente nesta infraestrutura.</span>
         </p>
 
         <ul class="card-tags">
           <li>MCA 100-16</li>
-          <li>Processamento de dados</li>
-          <li>acesso restrito</li>
+          <li data-i18n="cards.dataProcessing">Processamento de dados</li>
+          <li data-i18n="cards.restricted">acesso restrito</li>
         </ul>
 
         <div class="card-actions">
           <a class="btn btn-primary" href="https://tatic.jacare.cloud" rel="noopener">
-            Abrir aplicação
+            <span data-i18n="actions.open">Abrir aplicação</span>
             <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 12 L12 4 M6 4 h6 v6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
-          <a class="btn btn-ghost" href="https://tatic.jacare.cloud" rel="noopener noreferrer" target="_blank">Abrir em nova aba</a>
+          <a class="btn btn-ghost" href="https://tatic.jacare.cloud" rel="noopener noreferrer" target="_blank" data-i18n="actions.newTab">Abrir em nova aba</a>
         </div>
       </article>
 
@@ -144,29 +135,29 @@
             </svg>
           </span>
           <div class="card-titles">
-            <p class="card-kicker">AUTOMAÇÃO</p>
+            <p class="card-kicker" data-i18n="cards.automation">AUTOMAÇÃO</p>
             <h3 id="card-escala">Escala Automate</h3>
           </div>
-          <span class="chip chip-live" data-servico="escala">verificando</span>
+          <span class="chip chip-live" data-servico="escala" data-i18n="availability.checking" data-i18n-dynamic>verificando</span>
         </div>
 
         <p class="card-desc">
-          Aplicação para automação e consulta de escalas de serviço. O acesso é
-          protegido por autenticação própria do serviço.
+          <span data-i18n="cards.escala.description">Aplicação para automação e consulta de escalas de serviço. O acesso é
+          protegido por autenticação própria do serviço.</span>
         </p>
 
         <ul class="card-tags">
-          <li>Web app</li>
-          <li>Automação de escala</li>
-          <li>Acesso restrito</li>
+          <li data-i18n="cards.webApp">Web app</li>
+          <li data-i18n="cards.scheduleAutomation">Automação de escala</li>
+          <li data-i18n="cards.restricted">Acesso restrito</li>
         </ul>
 
         <div class="card-actions">
           <a class="btn btn-primary" href="https://escala.jacare.cloud" rel="noopener">
-            Abrir aplicação
+            <span data-i18n="actions.open">Abrir aplicação</span>
             <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 12 L12 4 M6 4 h6 v6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
-          <a class="btn btn-ghost" href="https://escala.jacare.cloud" rel="noopener noreferrer" target="_blank">Abrir em nova aba</a>
+          <a class="btn btn-ghost" href="https://escala.jacare.cloud" rel="noopener noreferrer" target="_blank" data-i18n="actions.newTab">Abrir em nova aba</a>
         </div>
       </article>
 
@@ -175,8 +166,8 @@
 
   <section class="section" aria-labelledby="titulo-metar">
     <div class="section-head">
-      <h2 id="titulo-metar">Meteorologia — METAR</h2>
-      <p class="section-note">Jacarepaguá · SBJR</p>
+      <h2 id="titulo-metar" data-i18n="metar.title">Meteorologia — METAR</h2>
+      <p class="section-note" data-i18n="metar.stationNote">Jacarepaguá · SBJR</p>
     </div>
 
     <div class="metar" id="metar">
@@ -184,10 +175,10 @@
       <div class="metar-head">
         <div class="metar-station">
           <span class="metar-icao">SBJR</span>
-          <span class="metar-nome">Jacarepaguá — Rio de Janeiro</span>
+          <span class="metar-nome" data-i18n="metar.stationName">Jacarepaguá — Rio de Janeiro</span>
         </div>
         <div class="metar-flags">
-          <span class="chip chip-wait" id="metar-estado">consultando</span>
+          <span class="chip chip-wait" id="metar-estado" data-i18n="metar.loading" data-i18n-dynamic>consultando</span>
           <span class="metar-idade" id="metar-idade">—</span>
         </div>
       </div>
@@ -196,14 +187,14 @@
 
       <div class="metar-corpo">
         <div class="metar-bruto-bloco">
-          <p class="metar-rotulo">Observação bruta</p>
+          <p class="metar-rotulo" data-i18n="metar.rawObservation">Observação bruta</p>
           <p class="metar-bruto" id="metar-bruto">aguardando dados…</p>
           <div class="metar-datas">
-            <span class="metar-data"><span class="metar-data-rotulo">Observação</span>
+              <span class="metar-data"><span class="metar-data-rotulo" data-i18n="metar.dataDate">Observação</span>
               <strong id="metar-obs-brt">—</strong> BRT
               <span class="metar-data-utc">(<span id="metar-obs-utc">—</span> UTC)</span>
             </span>
-            <span class="metar-data"><span class="metar-data-rotulo">Coleta</span>
+            <span class="metar-data"><span class="metar-data-rotulo" data-i18n="metar.collectionDate">Coleta</span>
               <strong id="metar-coleta-brt">—</strong> BRT
               <span class="metar-data-utc">(<span id="metar-coleta-utc">—</span> UTC)</span>
             </span>
@@ -212,40 +203,40 @@
 
         <dl class="metar-grid">
           <div class="metar-item">
-            <dt>Vento</dt>
+            <dt data-i18n="metar.wind">Vento</dt>
             <dd id="metar-vento">—</dd>
           </div>
           <div class="metar-item">
-            <dt>Visibilidade</dt>
+            <dt data-i18n="metar.visibility">Visibilidade</dt>
             <dd id="metar-visibilidade">—</dd>
           </div>
           <div class="metar-item">
-            <dt>Temperatura</dt>
+            <dt data-i18n="metar.temperature">Temperatura</dt>
             <dd id="metar-temperatura">—</dd>
           </div>
           <div class="metar-item">
-            <dt>Ponto de orvalho</dt>
+            <dt data-i18n="metar.dewPoint">Ponto de orvalho</dt>
             <dd id="metar-orvalho">—</dd>
           </div>
           <div class="metar-item">
-            <dt>QNH</dt>
+            <dt data-i18n="metar.qnh">QNH</dt>
             <dd id="metar-qnh">—</dd>
           </div>
           <div class="metar-item">
-            <dt>Condições</dt>
+            <dt data-i18n="metar.conditions">Condições</dt>
             <dd id="metar-condicoes">—</dd>
           </div>
           <div class="metar-item metar-item-larga">
-            <dt>Nebulosidade</dt>
+            <dt data-i18n="metar.clouds">Nebulosidade</dt>
             <dd id="metar-nuvens">—</dd>
           </div>
         </dl>
       </div>
 
       <p class="metar-disclaimer">
-        <strong>Dados informativos.</strong> Observação automática de estação, exibida para
+        <strong data-i18n="metar.disclaimerStrong">Dados informativos.</strong> <span data-i18n="metar.disclaimer">Observação automática de estação, exibida para
         acompanhamento. Não substitui as fontes aeronáuticas oficiais nem deve ser usada
-        para decisão operacional de voo. Fonte: Aviation Weather Center (NOAA/NWS).
+        para decisão operacional de voo. Fonte: Aviation Weather Center (NOAA/NWS).</span>
       </p>
 
     </div>
@@ -253,21 +244,22 @@
 
   <section class="section" aria-labelledby="titulo-disponibilidade">
     <div class="section-head">
-      <h2 id="titulo-disponibilidade">Disponibilidade dos serviços</h2>
-      <button class="btn btn-small" type="button" id="reverificar">Verificar novamente</button>
+      <h2 id="titulo-disponibilidade" data-i18n="availability.title">Disponibilidade dos serviços</h2>
+      <button class="btn btn-small" type="button" id="reverificar" data-i18n="availability.refresh">Verificar novamente</button>
     </div>
 
     <p class="hint">
-      A verificação é feita pelo seu navegador, no momento em que esta página é aberta,
+      <span data-i18n="availability.hint">A verificação é feita pelo seu navegador, no momento em que esta página é aberta,
       por meio de uma requisição direta a cada endereço. O resultado indica apenas se o
       servidor respondeu à requisição — não atesta a integridade interna das aplicações
-      nem substitui monitoramento contínuo. Nenhum indicador histórico é exibido.
+      nem substitui monitoramento contínuo. Nenhum indicador histórico é exibido.</span>
     </p>
 
     <noscript>
       <p class="hint no-js">
-        A verificação automática de disponibilidade depende de JavaScript e está
+        <span data-i18n="availability.noJs">A verificação automática de disponibilidade depende de JavaScript e está
         desativada neste navegador. Os estados abaixo não foram medidos.
+        </span>
       </p>
     </noscript>
 
@@ -279,22 +271,22 @@
           <span class="status-role">TATIC Processor</span>
         </span>
         <span class="status-latency" data-campo="latencia">—</span>
-        <span class="chip chip-wait" data-campo="estado">verificando</span>
+          <span class="chip chip-wait" data-campo="estado" data-i18n="availability.checking" data-i18n-dynamic>verificando</span>
       </div>
 
       <div class="status-row" data-url="https://escala.jacare.cloud" data-nome="escala.jacare.cloud" data-servico="escala">
         <span class="status-name">
           escala.jacare.cloud
-          <span class="status-role">Escala Automate · acesso restrito</span>
+          <span class="status-role"><span>Escala Automate</span> · <span data-i18n="cards.restricted">acesso restrito</span></span>
         </span>
         <span class="status-latency" data-campo="latencia">—</span>
-        <span class="chip chip-wait" data-campo="estado">verificando</span>
+          <span class="chip chip-wait" data-campo="estado" data-i18n="availability.checking" data-i18n-dynamic>verificando</span>
       </div>
 
     </div>
 
     <p class="timestamp">
-      Última verificação: <span id="hora-verificacao">aguardando</span>
+      <span data-i18n="availability.lastCheck">Última verificação:</span> <span id="hora-verificacao" data-i18n-dynamic>aguardando</span>
     </p>
   </section>
 
@@ -303,17 +295,17 @@
 <footer class="footer">
   <div class="footer-top">
     <span class="brand-name small">JACARÉ<b>CLOUD</b></span>
-    <span class="footer-version">versão 1.0</span>
+    <span class="footer-version" data-i18n="footer.version">versão 1.0</span>
   </div>
   <p class="footer-text">
-    O Jacaré Cloud é uma <strong>plataforma tecnológica independente</strong>, de caráter
+    <span data-i18n="footer.textBefore">O Jacaré Cloud é uma </span><strong data-i18n="footer.independent">plataforma tecnológica independente</strong><span data-i18n="footer.textAfter">, de caráter
     pessoal e experimental, sem vínculo institucional, patrocínio ou representação de
-    quaisquer órgãos, empresas ou entidades públicas ou privadas.
+    quaisquer órgãos, empresas ou entidades públicas ou privadas.</span>
   </p>
   <p class="footer-bottom">
     <span>© <span id="ano">2026</span> Jacaré Cloud</span>
     <span class="footer-sep" aria-hidden="true">·</span>
-    <span>Uso sob responsabilidade do operador</span>
+    <span data-i18n="footer.responsibility">Uso sob responsabilidade do operador</span>
   </p>
 </footer>
 

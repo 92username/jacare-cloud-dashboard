@@ -1,8 +1,14 @@
 # Jacaré Cloud — deploy do dashboard v1.0 + módulo METAR (NÃO EXECUTADO)
 
-Status: **aguardando autorização explícita do usuário.**
-Build validado e staged em `/tmp/jacare-dashboard-v1` e `/tmp/jacare-metar-v1` (VPS), fora do
-diretório web. A página pública segue no placeholder original.
+Status: **EXECUTADO em 07/11/2026, 22:13 BRT (08/11/2026 01:13 UTC), com autorização do autor.**
+
+Backup criado antes da cópia: `/var/www/jacare.cloud.bak-20261107-221315`
+(`index.html.backup` original preservado dentro do diretório web).
+
+Instalado: interface em `/var/www/jacare.cloud` (index + assets + data), coletor em
+`/opt/jacare-metar/collect.py`, estado privado em `/var/lib/jacare-metar`,
+`jacare-metar.service` e `jacare-metar.timer` em `/etc/systemd/system` (timer habilitado e ativo).
+Primeira coleta manual: sucesso, observação de 2026-11-08T00:00:00Z publicada.
 
 ## Estado atual de produção (verificado em 07/11/2026)
 

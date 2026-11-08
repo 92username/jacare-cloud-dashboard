@@ -162,6 +162,14 @@ a { color: var(--ciano); }
   flex-wrap: wrap;
 }
 
+.topbar-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
 .meta-label {
   font-size: 0.62rem;
   letter-spacing: 0.16em;
@@ -192,6 +200,52 @@ a { color: var(--ciano); }
   color: var(--ciano);
 }
 
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.2rem;
+  border: 1px solid var(--azul-borda);
+  border-radius: 999px;
+  background: rgba(6, 11, 18, 0.7);
+}
+
+.language-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 28px;
+  padding: 0.2rem 0.45rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--texto-fraco);
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.language-button:hover,
+.language-button[aria-pressed="true"] {
+  color: var(--verde);
+  background: var(--verde-fraco);
+}
+
+.language-button[aria-pressed="true"] { border-color: rgba(47, 208, 127, 0.32); }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* --------------------------------------------------------------------------
    Estrutura
    -------------------------------------------------------------------------- */
@@ -208,7 +262,7 @@ main {
    Hero
    -------------------------------------------------------------------------- */
 
-.hero { padding-bottom: clamp(1.5rem, 3vw, 2.5rem); }
+.hero { padding-bottom: clamp(1rem, 2vw, 1.5rem); }
 
 .hero-grid {
   display: grid;
@@ -292,40 +346,6 @@ h1 .accent {
   letter-spacing: 0.14em;
   color: var(--texto-fraco);
   text-align: center;
-}
-
-/* leituras */
-.readouts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1px;
-  margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
-  padding: 0;
-  border: var(--borda);
-  border-radius: var(--raio);
-  overflow: hidden;
-  background: var(--azul-borda);
-}
-
-.readout {
-  background: var(--azul-painel);
-  padding: 0.9rem 1.1rem;
-}
-
-.readout dt {
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--texto-fraco);
-}
-
-.readout dd {
-  margin: 0.3rem 0 0;
-  font-family: var(--mono);
-  font-size: 1.05rem;
-  color: var(--texto);
-  letter-spacing: 0.02em;
 }
 
 /* --------------------------------------------------------------------------
@@ -908,11 +928,11 @@ h2::before {
    Responsivo
    -------------------------------------------------------------------------- */
 
-@media (max-width: 860px) {
+@media (max-width: 768px) {
   .hero-grid { grid-template-columns: 1fr; }
   .metar-corpo { grid-template-columns: 1fr; }
   .metar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .hero-panel { display: none; }
+  .hero-panel { max-width: 160px; justify-self: center; }
   .status-row { grid-template-columns: minmax(0, 1fr) auto; row-gap: 0.5rem; }
   .status-latency { grid-column: 1 / 2; text-align: left; min-width: 0; }
   .status-row .chip { grid-column: 2 / 3; grid-row: 1 / 3; align-self: center; }
@@ -922,13 +942,13 @@ h2::before {
   .brand-sub { display: none; }
   .topbar { padding: 0.85rem var(--gutter); }
   .topbar-meta { font-size: 0.72rem; gap: 0.45rem; }
+  .topbar-tools { width: 100%; justify-content: space-between; }
   .meta-sep { display: none; }
   .clock { font-size: 0.74rem; }
   .cards { grid-template-columns: 1fr; }
   .card-actions { flex-direction: column; }
   .card-actions .btn { width: 100%; }
   .section-head { align-items: flex-start; }
-  .readouts { grid-template-columns: 1fr; }
   .status-row { padding: 0.8rem 0.9rem; gap: 0.5rem; }
   .btn-small { min-height: 44px; width: 100%; }
   .metar-bruto { font-size: 0.82rem; }
@@ -936,7 +956,6 @@ h2::before {
 }
 
 @media (max-width: 380px) {
-  .readout dd { font-size: 0.98rem; }
   .footer-bottom { font-size: 0.64rem; }
 }
 
@@ -957,6 +976,6 @@ h2::before {
 @media print {
   body { background: #fff; color: #111; }
   body::before, .radar, .card::after { display: none; }
-  .card, .readouts, .status-list { border-color: #ccc; background: #fff; }
+  .card, .status-list { border-color: #ccc; background: #fff; }
   .btn { border: 1px solid #999; color: #111; background: #fff; }
 }

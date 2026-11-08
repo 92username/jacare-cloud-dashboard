@@ -7,6 +7,11 @@
 (function () {
   'use strict';
 
+  var i18n = window.JacareCloudI18n;
+  function t(chave, valores) {
+    return i18n ? i18n.t(chave, valores) : chave;
+  }
+
   var ARQUIVO = 'data/metar.json';
   var INTERVALO_MS = 5 * 60 * 1000;      // revalida o arquivo local a cada 5 min
   var LIMIAR_ATRASO_MIN = 90;            // METAR de SBJR é horário
@@ -25,7 +30,7 @@
   /* ---------------------------------------------------------------- tempo */
 
   function partesBrt(data) {
-    var fmt = new Intl.DateTimeFormat('pt-BR', {
+    var fmt = new Intl.DateTimeFormat(i18n && i18n.language === 'en' ? 'en-GB' : 'pt-BR', {
       timeZone: FUSO, hour: '2-digit', minute: '2-digit', hour12: false
     });
     var partes = fmt.formatToParts(data);
@@ -38,7 +43,7 @@
     if (!iso) { return '—'; }
     var d = new Date(iso);
     if (isNaN(d.getTime())) { return '—'; }
-    return new Intl.DateTimeFormat('pt-BR', {
+    return new Intl.DateTimeFormat(i18n && i18n.language === 'en' ? 'en-GB' : 'pt-BR', {
       timeZone: FUSO, day: '2-digit', month: '2-digit',
       hour: '2-digit', minute: '2-digit', hour12: false
     }).format(d);
@@ -48,19 +53,19 @@
     if (!iso) { return '—'; }
     var d = new Date(iso);
     if (isNaN(d.getTime())) { return '—'; }
-    return new Intl.DateTimeFormat('pt-BR', {
+    return new Intl.DateTimeFormat(i18n && i18n.language === 'en' ? 'en-GB' : 'pt-BR', {
       timeZone: 'UTC', day: '2-digit', month: '2-digit',
       hour: '2-digit', minute: '2-digit', hour12: false
     }).format(d) + 'Z';
   }
 
   function emMinutos(segundos) {
-    if (segundos < 60) { return 'menos de 1 min'; }
+    if (segundos < 60) { return t('metar.lessThanMinute'); }
     var min = Math.round(segundos / 60);
-    if (min < 60) { return min + ' min'; }
+    if (min < 60) { return min + ' ' + t('metar.minutes'); }
     var h = Math.floor(min / 60);
     var resto = min % 60;
-    return resto ? h + ' h ' + resto + ' min' : h + ' h';
+    return resto ? h + ' ' + t('metar.hours') + ' ' + resto + ' ' + t('metar.minutes') : h + ' ' + t('metar.hours');
   }
 
   // Suspensão da coleta: de 22:06 (inclusive) até 05:59 (inclusive), em BRT.
@@ -74,7 +79,7 @@
 
   var numero = new Intl.NumberFormat('pt-BR');
 
-  var CARDINAIS = ['N', 'NE', 'L', 'SE', 'S', 'SO', 'O', 'NO'];
+  var CARDINAIS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
 
   function cardinal(graus) {
     if (typeof graus !== 'number' || isNaN(graus)) { return ''; }
@@ -83,50 +88,49 @@
   }
 
   function formatarVento(vento) {
-    if (!vento || typeof vento.velocidade_kt !== 'number') { return 'não informado'; }
-    if (vento.calmo) { return 'calmo'; }
+    if (!vento || typeof vento.velocidade_kt !== 'number') { return t('metar.notInformed'); }
+    if (vento.calmo) { return t('metar.calm'); }
 
     var direcao;
     if (vento.direcao_variavel) {
-      direcao = 'variável';
+      direcao = t('metar.variable');
     } else if (typeof vento.direcao_graus === 'number') {
       var graus = String(vento.direcao_graus).padStart(3, '0');
       var card = cardinal(vento.direcao_graus);
       direcao = graus + '°' + (card ? ' (' + card + ')' : '');
     } else {
-      direcao = 'direção não informada';
+      direcao = t('metar.directionUnknown');
     }
 
     var texto = direcao + ' · ' + vento.velocidade_kt + ' kt';
     if (typeof vento.rajada_kt === 'number') {
-      texto += ', rajadas ' + vento.rajada_kt + ' kt';
+      texto += ', ' + t('metar.gusts') + ' ' + vento.rajada_kt + ' kt';
     }
     return texto;
   }
 
   function formatarVisibilidade(vis) {
-    if (!vis) { return 'não informada'; }
-    if (vis.cavok) { return 'CAVOK · 10 km ou mais' }
+    if (!vis) { return t('metar.notInformedFem'); }
+    if (vis.cavok) { return 'CAVOK · ' + t('metar.orMore'); }
     if (typeof vis.metros === 'number') {
-      if (vis.metros >= 9999 || vis.metros >= 10000) { return '10 km ou mais'; }
+      if (vis.metros >= 9999 || vis.metros >= 10000) { return t('metar.orMore'); }
       return numero.format(vis.metros) + ' m';
     }
-    if (vis.milhas) { return vis.milhas + ' mi (fonte)'; }
-    return 'não informada';
+    if (vis.milhas) { return vis.milhas + ' mi (' + t('metar.source') + ')'; }
+    return t('metar.notInformedFem');
   }
 
   var DESCRITORES = {
-    MI: 'raso', PR: 'parcial', BC: 'fragmentado', DR: 'levantado por vento',
-    BL: 'soprado pelo vento', SH: 'pancadas de', TS: 'trovoada', FZ: 'congelante'
+    MI: 'metar.shallow', PR: 'metar.partial', BC: 'metar.broken', DR: 'metar.lifted',
+    BL: 'metar.blowing', SH: 'metar.showers', TS: 'metar.thunderstorm', FZ: 'metar.freezing'
   };
 
   var FENOMENOS = {
-    DZ: 'chuvisco', RA: 'chuva', SN: 'neve', SG: 'grãos de neve', IC: 'cristais de gelo',
-    PL: 'pelotas de gelo', GR: 'granizo', GS: 'granizo pequeno', UP: 'precipitação desconhecida',
-    BR: 'névoa úmida', FG: 'nevoeiro', FU: 'fumaça', VA: 'cinzas vulcânicas',
-    DU: 'poeira', SA: 'areia', HZ: 'névoa seca', PY: 'borrifo do mar',
-    PO: 'redemoinhos de poeira', SQ: 'rajadas fortes', FC: 'nuvem funil',
-    SS: 'tempestade de areia', DS: 'tempestade de poeira'
+    DZ: 'metar.weather.DZ', RA: 'metar.weather.RA', SN: 'metar.weather.SN', SG: 'metar.weather.SG', IC: 'metar.weather.IC',
+    PL: 'metar.weather.PL', GR: 'metar.weather.GR', GS: 'metar.weather.GS', UP: 'metar.weather.UP', BR: 'metar.weather.BR',
+    FG: 'metar.weather.FG', FU: 'metar.weather.FU', VA: 'metar.weather.VA', DU: 'metar.weather.DU', SA: 'metar.weather.SA',
+    HZ: 'metar.weather.HZ', PY: 'metar.weather.PY', PO: 'metar.weather.PO', SQ: 'metar.weather.SQ', FC: 'metar.weather.FC',
+    SS: 'metar.weather.SS', DS: 'metar.weather.DS'
   };
 
   function traduzirCondicao(codigo) {
@@ -135,9 +139,9 @@
 
     var texto = original;
     var intensidade = '';
-    if (texto.indexOf('+') === 0) { intensidade = 'forte'; texto = texto.slice(1); }
-    else if (texto.indexOf('-') === 0) { intensidade = 'leve'; texto = texto.slice(1); }
-    else if (texto.indexOf('VC') === 0) { intensidade = 'nas proximidades'; texto = texto.slice(2); }
+    if (texto.indexOf('+') === 0) { intensidade = t('metar.strong'); texto = texto.slice(1); }
+    else if (texto.indexOf('-') === 0) { intensidade = t('metar.light'); texto = texto.slice(1); }
+    else if (texto.indexOf('VC') === 0) { intensidade = t('metar.nearby'); texto = texto.slice(2); }
 
     var descritores = [];
     var fenomenos = [];
@@ -145,9 +149,9 @@
     while (resto.length >= 2) {
       var par = resto.slice(0, 2).toUpperCase();
       if (DESCRITORES[par] && !fenomenos.length) {
-        descritores.push(DESCRITORES[par]);
+        descritores.push(t(DESCRITORES[par]));
       } else if (FENOMENOS[par]) {
-        fenomenos.push(FENOMENOS[par]);
+        fenomenos.push(t(FENOMENOS[par]));
       } else {
         return original;               // código não reconhecido: mostra como veio
       }
@@ -155,25 +159,25 @@
     }
 
     var frase;
-    if (descritores.indexOf('trovoada') !== -1) {
-      frase = fenomenos.length ? 'trovoada com ' + fenomenos.join(' e ') : 'trovoada';
+    if (descritores.indexOf(t('metar.thunderstorm')) !== -1) {
+      frase = fenomenos.length ? t('metar.thunderstorm') + ' ' + t('metar.with') + ' ' + fenomenos.join(' ' + t('metar.and') + ' ') : t('metar.thunderstorm');
     } else if (descritores.length && fenomenos.length) {
-      frase = descritores.join(' ') + ' ' + fenomenos.join(' e ');
+      frase = descritores.join(' ') + ' ' + fenomenos.join(' ' + t('metar.and') + ' ');
     } else {
-      frase = (descritores.join(' ') || fenomenos.join(' e '));
+      frase = (descritores.join(' ') || fenomenos.join(' ' + t('metar.and') + ' '));
     }
 
     if (!frase) { return original; }
-    if (intensidade && intensidade !== 'nas proximidades') {
+    if (intensidade && intensidade !== t('metar.nearby')) {
       frase += ' ' + intensidade;
-    } else if (intensidade === 'nas proximidades') {
-      frase = 'nas proximidades: ' + frase;
+    } else if (intensidade === t('metar.nearby')) {
+      frase = t('metar.nearby') + ': ' + frase;
     }
     return frase;
   }
 
   function formatarCondicoes(codigo) {
-    if (!codigo) { return 'sem fenômenos significativos'; }
+    if (!codigo) { return t('metar.noSignificant'); }
     var partes = String(codigo).split(/\s+/).filter(Boolean);
     var traduzidas = partes.map(traduzirCondicao);
     return partes.map(function (bruto, i) {
@@ -184,20 +188,18 @@
   }
 
   var COBERTURAS = {
-    FEW: 'poucas nuvens', SCT: 'nuvens dispersas', BKN: 'nublado',
-    OVC: 'encoberto', VV: 'visibilidade vertical',
-    NSC: 'sem nuvens significativas', NCD: 'sem nuvens detectadas',
-    SKC: 'céu claro', CLR: 'céu claro'
+    FEW: 'metar.cloud.FEW', SCT: 'metar.cloud.SCT', BKN: 'metar.cloud.BKN', OVC: 'metar.cloud.OVC', VV: 'metar.cloud.VV',
+    NSC: 'metar.cloud.NSC', NCD: 'metar.cloud.NCD', SKC: 'metar.cloud.SKC', CLR: 'metar.cloud.CLR'
   };
 
   function formatarNuvens(nuvens, visibilidade) {
     if (!Array.isArray(nuvens) || !nuvens.length) {
-      if (visibilidade && visibilidade.cavok) { return 'CAVOK · sem nuvens significativas'; }
-      return 'não informada';
+      if (visibilidade && visibilidade.cavok) { return 'CAVOK · ' + t('metar.noSignificant'); }
+      return t('metar.notInformedFem');
     }
     var itens = nuvens.map(function (n) {
       var cob = (n && n.cobertura) || '';
-      var rotulo = COBERTURAS[cob] || '';
+      var rotulo = COBERTURAS[cob] ? t(COBERTURAS[cob]) : '';
       var base = (n && typeof n.base_ft === 'number')
         ? numero.format(n.base_ft) + ' ft'
         : '';
@@ -211,7 +213,7 @@
   }
 
   function temperatura(valor) {
-    return (typeof valor === 'number') ? valor + ' °C' : 'não informada';
+    return (typeof valor === 'number') ? valor + ' °C' : t('metar.notInformedFem');
   }
 
   /* -------------------------------------------------------------- estados */
@@ -244,19 +246,20 @@
 
   function semDados(motivo) {
     limpar();
-    if (el['metar-bruto']) { el['metar-bruto'].textContent = 'sem observação disponível'; }
+    if (el['metar-bruto']) { el['metar-bruto'].textContent = t('metar.noData'); }
     if (el['metar-idade']) { el['metar-idade'].textContent = '—'; }
-    definirChip('sem dados', 'chip-fail');
-    mostrarAviso(motivo || 'O arquivo de observação não está disponível no momento.');
+    definirChip(t('metar.noData'), 'chip-fail');
+    mostrarAviso(motivo || t('metar.noFile'));
   }
 
   /* ------------------------------------------------------------- renderiza */
 
   function renderizar(dados) {
+    window.__jacareMetarData = dados;
     var observacao = dados && dados.observacao;
     if (!observacao || !observacao.metar_bruto) {
       var msg = (dados && dados.coleta && dados.coleta.mensagem) || '';
-      semDados(msg ? 'Última tentativa de coleta sem sucesso: ' + msg + '.' : '');
+      semDados(msg ? t('metar.lastFailed', { message: msg }) : '');
       return;
     }
 
@@ -268,7 +271,7 @@
     el['metar-temperatura'].textContent = temperatura(observacao.temperatura_c);
     el['metar-orvalho'].textContent = temperatura(observacao.ponto_orvalho_c);
     el['metar-qnh'].textContent = (typeof observacao.qnh_hpa === 'number')
-      ? numero.format(observacao.qnh_hpa) + ' hPa' : 'não informado';
+      ? numero.format(observacao.qnh_hpa) + ' hPa' : t('metar.notInformed');
     el['metar-condicoes'].innerHTML = formatarCondicoes(observacao.condicoes);
     el['metar-nuvens'].innerHTML = formatarNuvens(observacao.nuvens, observacao.visibilidade);
 
@@ -282,12 +285,12 @@
     var segundos = null;
     if (typeof observacao.observado_epoch === 'number') {
       segundos = Math.max(0, Math.floor(Date.now() / 1000) - observacao.observado_epoch);
-      idadeTexto = 'observada há ' + emMinutos(segundos);
+      idadeTexto = t('metar.observedAgo', { time: emMinutos(segundos) });
     } else if (observacao.observado_utc) {
       var data = new Date(observacao.observado_utc);
       if (!isNaN(data.getTime())) {
         segundos = Math.max(0, Math.floor((Date.now() - data.getTime()) / 1000));
-        idadeTexto = 'observada há ' + emMinutos(segundos);
+        idadeTexto = t('metar.observedAgo', { time: emMinutos(segundos) });
       }
     }
     if (el['metar-idade']) { el['metar-idade'].textContent = idadeTexto || '—'; }
@@ -295,22 +298,22 @@
     var atrasoMin = segundos === null ? null : Math.floor(segundos / 60);
 
     if (atrasoMin !== null && atrasoMin > LIMIAR_ATRASO_MIN) {
-      definirChip('desatualizada', 'chip-fail');
+      definirChip(t('metar.outdated'), 'chip-fail');
     } else {
-      definirChip('atualizada', 'chip-ok');
+      definirChip(t('metar.updated'), 'chip-ok');
     }
 
     // avisos: coleta suspensa, falha de coleta, observação atrasada
     var avisos = [];
     if (horarioNoturno()) {
-      avisos.push('Coleta noturna suspensa (entre 22:06 e 05:59 BRT); a próxima está prevista para 06:20. Exibindo a última observação coletada.');
+      avisos.push(t('metar.nightWarning'));
     }
     if (falhaColeta) {
-      var detalhe = (dados.coleta.mensagem || 'falha na coleta');
-      avisos.push('A última tentativa de coleta não foi concluída (' + detalhe + '). A observação exibida é a última válida.');
+      var detalhe = (dados.coleta.mensagem || (i18n && i18n.language === 'en' ? 'collection failure' : 'falha na coleta'));
+      avisos.push(t('metar.collectionFailed', { message: detalhe }));
     }
     if (atrasoMin !== null && atrasoMin > LIMIAR_ATRASO_MIN) {
-      avisos.push('A observação tem ' + emMinutos(segundos) + ' e pode não refletir as condições atuais.');
+      avisos.push(t('metar.staleWarning', { time: emMinutos(segundos) }));
     }
     mostrarAviso(avisos.join(' '));
   }
@@ -332,7 +335,7 @@
         renderizar(dados);
       })
       .catch(function () {
-        semDados('Não foi possível carregar o arquivo de observação. O coletor pode estar desativado ou a coleta ainda não foi executada.');
+        semDados(t('metar.loadFailed'));
       })
       .then(function () {
         carregando = false;
@@ -341,6 +344,13 @@
 
   carregar();
   window.setInterval(carregar, INTERVALO_MS);
+
+  document.addEventListener('jacare:languagechange', function () {
+    if (el['metar-bruto'] && !el['metar-bruto'].textContent.trim()) {
+      el['metar-bruto'].textContent = t('metar.waitingData');
+    }
+    if (window.__jacareMetarData) { renderizar(window.__jacareMetarData); }
+  });
 
   document.addEventListener('visibilitychange', function () {
     if (!document.hidden) { carregar(); }
