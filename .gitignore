@@ -1,0 +1,9 @@
+*.bak-*
+*.log
+__pycache__/
+.DS_Store
+.venv/
+node_modules/
+
+# dado gerado pelo coletor
+dashboard-v1/data/

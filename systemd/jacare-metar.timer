@@ -1,0 +1,17 @@
+[Unit]
+Description=Jacare Cloud - agenda de coleta METAR SBJR
+Documentation=https://jacare.cloud
+
+[Timer]
+# Janela diurna, fuso America/Sao_Paulo (o host roda em -03).
+# De 06:20 a 21:50 a cada 30 min (:20 e :50), mais a coleta final das 22:05,
+# que captura o METAR das 22:00Z. Nada entre 22:06 e 05:59.
+OnCalendar=*-*-* 06..21:20/30:00
+OnCalendar=*-*-* 22:05:00
+AccuracySec=1min
+RandomizedDelaySec=0
+Persistent=false
+Unit=jacare-metar.service
+
+[Install]
+WantedBy=timers.target
