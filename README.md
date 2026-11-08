@@ -74,8 +74,10 @@ node --check dashboard-v1/assets/app.js
 
 ## Publicar
 
-Ver [docs/deploy.md](docs/deploy.md). Nada é publicado automaticamente; o coletor roda por
-timer do systemd no servidor.
+Push na `main` publica em <https://jacare.cloud> via GitHub Actions — ver
+[docs/ci-cd.md](docs/ci-cd.md). O coletor METAR continua sendo atualizado manualmente no
+servidor; a publicação do site não mexe nele. O passo a passo manual de referência (sem CI)
+fica em [docs/deploy.md](docs/deploy.md).
 
 ## Aviso
 

@@ -1,5 +1,9 @@
 # Publicação
 
+> O caminho normal hoje é o pipeline: push na `main` publica automaticamente
+> (ver [ci-cd.md](ci-cd.md)). Este documento descreve o procedimento manual, útil para
+> reinstalar o servidor ou publicar sem CI.
+
 Requisitos: servidor web estático (nginx ou equivalente), `systemd` e Python 3.8+ com
 `zoneinfo` (biblioteca padrão). Nenhum pacote extra é necessário.
 

@@ -1,0 +1,96 @@
+name: Deploy jacare.cloud
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-jacare-cloud
+  cancel-in-progress: false
+
+jobs:
+  validar:
+    name: Validar site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validador de estrutura e acessibilidade
+        run: python3 tools/validate.py dashboard-v1
+
+      - name: Sintaxe do JavaScript
+        run: |
+          node --check dashboard-v1/assets/app.js
+          node --check dashboard-v1/assets/metar.js
+
+      - name: Autoteste do coletor METAR
+        run: python3 metar/collect.py --autoteste
+
+      - name: Nenhum dado gerado pode ir para produção
+        run: |
+          if [ -e dashboard-v1/data ]; then
+            echo "::error::dashboard-v1/data/ está versionado — dado do coletor não pode ser publicado a partir do repositório"
+            exit 1
+          fi
+          echo "dashboard-v1/data/ ausente, como esperado"
+
+  deploy:
+    name: Publicar na VPS
+    needs: validar
+    runs-on: ubuntu-latest
+    environment: producao
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Preparar chave SSH
+        run: |
+          set -euo pipefail
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+          echo "known_hosts: $(wc -l < ~/.ssh/known_hosts) entrada(s)"
+
+      - name: Enviar site para a área de staging
+        run: |
+          set -euo pipefail
+          rsync -az --delete --exclude 'data/' \
+            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes" \
+            dashboard-v1/ "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/srv/jacare-deploy/staging/"
+          echo "staging atualizado com o commit ${GITHUB_SHA}"
+
+      - name: Aplicar em produção (backup + rsync + verificação)
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes \
+            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+            'sudo -n /usr/local/bin/jacare-deploy.sh apply'
+
+      - name: Conferir o site publicado
+        run: |
+          set -euo pipefail
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://jacare.cloud/)
+          echo "https://jacare.cloud/ → HTTP $code"
+          [ "$code" = "200" ] || exit 1
+          local_sha=$(sha256sum dashboard-v1/index.html | cut -d' ' -f1)
+          live_sha=$(curl -s --compressed --max-time 20 https://jacare.cloud/ | sha256sum | cut -d' ' -f1)
+          echo "index.html: local=$local_sha produção=$live_sha"
+          [ "$local_sha" = "$live_sha" ] || { echo "::error::index.html servido difere do commit"; exit 1; }
+
+      - name: Resumo
+        if: always()
+        run: |
+          {
+            echo "### Deploy jacare.cloud"
+            echo ""
+            echo "- commit: \`${GITHUB_SHA}\`"
+            echo "- publica: \`dashboard-v1/\` → \`/var/www/jacare.cloud\` na VPS"
+            echo "- preserva: \`data/\` (METAR do coletor) e \`index.html.backup\`"
+            echo "- rollback: \`ssh <vps> 'sudo /usr/local/bin/jacare-deploy.sh rollback'\`"
+          } >> "$GITHUB_STEP_SUMMARY"
