@@ -32,6 +32,10 @@ metar/collect.py       # coletor METAR (Python 3, biblioteca padrão)
 systemd/               # jacare-metar.service e jacare-metar.timer
 tools/validate.py      # validador de HTML (estrutura, acessibilidade, segurança)
 docs/deploy.md         # como publicar
+src/main.rs            # API e coletor ADS-B em Rust
+Cargo.toml             # serviço Jacaré Cloud v2
+Dockerfile             # imagem OCI publicada no GHCR
+compose.prod.yml       # execução restrita na VPS
 ```
 
 ## Rodar localmente
@@ -74,10 +78,18 @@ node --check dashboard-v1/assets/app.js
 
 ## Publicar
 
-Push na `main` publica em <https://jacare.cloud> via GitHub Actions — ver
-[docs/ci-cd.md](docs/ci-cd.md). O coletor METAR continua sendo atualizado manualmente no
-servidor; a publicação do site não mexe nele. O passo a passo manual de referência (sem CI)
-fica em [docs/deploy.md](docs/deploy.md).
+Push na `main` valida o projeto e publica uma imagem pública no GHCR, identificada pelo SHA
+completo do commit. O deploy em produção é propositalmente manual (`workflow_dispatch`) e
+exige informar esse SHA. Ver [docs/ci-cd.md](docs/ci-cd.md).
+
+Prévia local com posições simuladas:
+
+```
+JACARE_DEMO=1 JACARE_BIND=127.0.0.1:8099 cargo run
+```
+
+Abra <http://127.0.0.1:8099>. O coletor METAR existente continua externo ao container; o
+Compose monta `/var/www/jacare.cloud/data` como volume somente leitura no frontend.
 
 ## Aviso
 

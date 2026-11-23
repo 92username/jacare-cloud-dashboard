@@ -19,6 +19,13 @@
       'skip': 'Ir para o conteúdo', 'brand.sub': 'console operacional', 'language.pt': 'Português brasileiro', 'language.en': 'Inglês',
       'clock.local': 'HORA LOCAL', 'clock.utc': 'UTC', 'language.label': 'Idioma',
       'hero.eyebrow': 'Plataforma tecnológica independente', 'hero.title': 'Centro de operações', 'systems.title': 'Sistemas disponíveis',
+      'traffic.title': 'Tráfego aéreo — SBJR', 'traffic.intro': 'Aeronaves ADS-B abaixo de 6.000 ft no entorno de Jacarepaguá.',
+      'traffic.fullscreen': 'Tela cheia', 'traffic.descending': 'descendo', 'traffic.climbing': 'subindo', 'traffic.level': 'nivelado',
+      'traffic.demo': 'Prévia local · posições simuladas', 'traffic.now': 'aeronaves agora', 'traffic.searchLabel': 'Pesquisar aeronave observada',
+      'traffic.searchPlaceholder': 'Matrícula, callsign ou hex', 'traffic.search': 'Buscar', 'traffic.movements': 'movimentos',
+      'traffic.arrivals': 'chegadas', 'traffic.departures': 'partidas', 'traffic.distinct': 'aeronaves',
+      'traffic.latestArrivals': 'Últimas chegadas', 'traffic.latestDepartures': 'Últimas partidas', 'traffic.history': 'Ver histórico',
+      'traffic.disclaimer': 'Dados comunitários ADS-B/MLAT, sujeitos a omissões e imprecisões. Uso exclusivamente informativo.',
       'cards.processing': 'PROCESSAMENTO', 'cards.automation': 'AUTOMAÇÃO',
       'cards.tatic.description': 'Aplicação web de processamento de dados do sistema TATIC, mantida como serviço independente nesta infraestrutura.',
       'cards.escala.description': 'Aplicação para automação e consulta de escalas de serviço. O acesso é protegido por autenticação própria do serviço.',
@@ -72,6 +79,13 @@
     'en': {
       'skip': 'Skip to content', 'brand.sub': 'operations console', 'language.pt': 'Brazilian Portuguese', 'language.en': 'English', 'clock.local': 'LOCAL TIME', 'clock.utc': 'UTC', 'language.label': 'Language',
       'hero.eyebrow': 'Independent technology platform', 'hero.title': 'Operations center', 'systems.title': 'Available systems', 'cards.processing': 'PROCESSING', 'cards.automation': 'AUTOMATION',
+      'traffic.title': 'Air traffic — SBJR', 'traffic.intro': 'ADS-B aircraft below 6,000 ft around Jacarepaguá.',
+      'traffic.fullscreen': 'Full screen', 'traffic.descending': 'descending', 'traffic.climbing': 'climbing', 'traffic.level': 'level',
+      'traffic.demo': 'Local preview · simulated positions', 'traffic.now': 'aircraft now', 'traffic.searchLabel': 'Search observed aircraft',
+      'traffic.searchPlaceholder': 'Registration, callsign or hex', 'traffic.search': 'Search', 'traffic.movements': 'movements',
+      'traffic.arrivals': 'arrivals', 'traffic.departures': 'departures', 'traffic.distinct': 'aircraft',
+      'traffic.latestArrivals': 'Latest arrivals', 'traffic.latestDepartures': 'Latest departures', 'traffic.history': 'View history',
+      'traffic.disclaimer': 'Community ADS-B/MLAT data may contain omissions and inaccuracies. For informational use only.',
       'cards.tatic.description': 'Web application for processing TATIC system data, maintained as an independent service on this infrastructure.',
       'cards.escala.description': 'Application for automating and consulting service rosters. Access is protected by the service’s own authentication.',
       'cards.dataProcessing': 'Data processing', 'cards.scheduleAutomation': 'Roster automation', 'cards.webApp': 'Web app', 'cards.restricted': 'restricted access',
@@ -106,6 +120,9 @@
       document.documentElement.lang = idioma;
       document.querySelectorAll('[data-i18n]:not([data-i18n-dynamic])').forEach(function (node) {
         node.textContent = i18n.t(node.getAttribute('data-i18n'));
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(function (node) {
+        node.setAttribute('placeholder', i18n.t(node.getAttribute('data-i18n-placeholder')));
       });
       var tituloPrefixo = document.getElementById('titulo-prefixo');
       if (tituloPrefixo) { tituloPrefixo.textContent = i18n.t('hero.title'); }

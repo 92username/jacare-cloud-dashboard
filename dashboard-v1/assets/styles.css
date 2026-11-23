@@ -256,7 +256,15 @@ main {
   max-width: var(--largura);
   margin: 0 auto;
   padding: clamp(1.75rem, 4vw, 3rem) var(--gutter) 0;
+  display: flex;
+  flex-direction: column;
 }
+
+.layout-hero { order: 0; }
+.layout-traffic { order: 1; }
+.layout-metar { order: 2; }
+.layout-systems { order: 3; }
+.layout-availability { order: 4; }
 
 /* --------------------------------------------------------------------------
    Hero
@@ -347,6 +355,121 @@ h1 .accent {
   color: var(--texto-fraco);
   text-align: center;
 }
+
+/* --------------------------------------------------------------------------
+   Tráfego ADS-B
+   -------------------------------------------------------------------------- */
+
+.traffic-heading { align-items: flex-end; }
+.traffic-intro { margin: 0.35rem 0 0 1.8rem; color: var(--texto-fraco); font-size: 0.84rem; }
+.traffic-head-actions { display: flex; align-items: center; gap: 0.65rem; }
+
+.traffic-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 2.4fr) minmax(230px, 0.8fr);
+  min-height: 500px;
+  border: var(--borda);
+  border-radius: var(--raio);
+  overflow: hidden;
+  background: var(--azul-painel);
+  box-shadow: var(--sombra);
+}
+
+.traffic-map-wrap { position: relative; min-height: 500px; overflow: hidden; background: #07121b; }
+.traffic-map { position: absolute; inset: 0; }
+.traffic-map .maplibregl-canvas { filter: saturate(0.62) brightness(0.62) contrast(1.16) hue-rotate(155deg); }
+.traffic-map::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  box-shadow: inset 0 0 80px rgba(3, 10, 16, 0.78);
+  background-image: linear-gradient(rgba(42, 212, 230, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(42, 212, 230, 0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+.traffic-map .maplibregl-ctrl-attrib { background: rgba(4, 12, 18, 0.82); color: #a7bdcd; font-size: 10px; }
+.traffic-map .maplibregl-ctrl-attrib a { color: #bceef2; }
+.traffic-map-topline {
+  position: absolute; z-index: 4; top: 0.8rem; left: 0.8rem; right: 0.8rem;
+  display: flex; justify-content: space-between; pointer-events: none;
+  font: 0.64rem/1 var(--mono); letter-spacing: 0.12em; color: rgba(221, 247, 249, 0.8);
+  text-shadow: 0 1px 3px #000;
+}
+.traffic-legend {
+  position: absolute; z-index: 4; left: 0.8rem; bottom: 1.9rem;
+  display: flex; flex-wrap: wrap; gap: 0.7rem; padding: 0.4rem 0.6rem;
+  border: 1px solid rgba(42, 212, 230, 0.22); border-radius: 7px;
+  background: rgba(4, 12, 18, 0.82); backdrop-filter: blur(7px);
+  font: 0.63rem/1 var(--mono); color: var(--texto-suave); text-transform: uppercase;
+}
+.traffic-legend > span { display: inline-flex; align-items: center; gap: 0.35rem; }
+.legend-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ciano); }
+.legend-arrival { background: var(--alerta); }
+.legend-departure { background: var(--verde); }
+.traffic-demo {
+  position: absolute; z-index: 5; top: 2rem; left: 50%; transform: translateX(-50%);
+  margin: 0; padding: 0.3rem 0.65rem; border: 1px solid rgba(240, 161, 58, 0.55);
+  border-radius: 999px; background: rgba(35, 24, 8, 0.9); color: #ffd8a5;
+  font: 0.66rem/1.4 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap;
+}
+
+.traffic-sidebar { padding: 1.2rem; border-left: var(--borda); background: linear-gradient(180deg, rgba(13, 26, 39, 0.98), rgba(7, 15, 24, 0.98)); }
+.traffic-now { display: flex; flex-direction: column; padding-bottom: 1rem; border-bottom: 1px dashed var(--azul-borda); }
+.traffic-now-value { font: 500 clamp(2.5rem, 6vw, 4rem)/1 var(--mono); color: var(--ciano); }
+.traffic-now-label { margin-top: 0.35rem; font: 0.68rem/1.4 var(--mono); letter-spacing: 0.13em; text-transform: uppercase; color: var(--texto-suave); }
+.traffic-updated { margin-top: 0.35rem; font: 0.66rem/1.4 var(--mono); color: var(--texto-fraco); }
+.traffic-search-label { display: block; margin: 1rem 0 0.4rem; font: 0.62rem/1.4 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--texto-fraco); }
+.traffic-search-row { display: flex; gap: 0.4rem; }
+.traffic-search { width: 100%; min-width: 0; height: 40px; padding: 0 0.7rem; border: var(--borda); border-radius: var(--raio-peq); background: rgba(3, 9, 15, 0.72); color: var(--texto); font: 0.78rem var(--mono); }
+.traffic-search::placeholder { color: #5f778a; }
+.traffic-search-row .btn { flex: none; }
+.traffic-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin-top: 1rem; border: var(--borda); border-radius: var(--raio-peq); overflow: hidden; background: var(--azul-borda); }
+.traffic-stats div { display: flex; flex-direction: column; padding: 0.75rem; background: rgba(7, 15, 24, 0.96); }
+.traffic-stats strong { font: 500 1.35rem/1 var(--mono); color: var(--verde); }
+.traffic-stats span { margin-top: 0.3rem; font: 0.58rem/1.3 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--texto-fraco); }
+
+.aircraft-marker { position: relative; width: 32px; height: 32px; color: var(--ciano); cursor: pointer; filter: drop-shadow(0 0 5px rgba(42, 212, 230, 0.8)); }
+.aircraft-marker.climbing { color: var(--verde); filter: drop-shadow(0 0 5px rgba(47, 208, 127, 0.85)); }
+.aircraft-marker.descending { color: var(--alerta); filter: drop-shadow(0 0 5px rgba(240, 161, 58, 0.85)); }
+.aircraft-marker svg { width: 32px; height: 32px; overflow: visible; }
+.aircraft-marker-label { position: absolute; left: 28px; top: -2px; min-width: max-content; padding: 0.18rem 0.35rem; border: 1px solid currentColor; border-radius: 4px; background: rgba(3, 10, 16, 0.83); color: inherit; font: 0.62rem/1.25 var(--mono); letter-spacing: 0.04em; }
+
+.movement-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+.movement-panel { border: var(--borda); border-radius: var(--raio); overflow: hidden; background: var(--azul-painel); }
+.movement-title { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-bottom: var(--borda); background: rgba(13, 26, 39, 0.78); }
+.movement-title h3 { margin: 0; font-size: 0.82rem; font-weight: 600; }
+.movement-title > span { font: 0.62rem var(--mono); letter-spacing: 0.14em; color: var(--ciano); }
+.movement-list { margin: 0; padding: 0; list-style: none; }
+.movement-list li { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr) auto auto; gap: 0.65rem; align-items: center; min-height: 44px; padding: 0.5rem 0.85rem; border-bottom: 1px solid rgba(22, 41, 59, 0.72); font-size: 0.78rem; }
+.movement-list li:last-child { border-bottom: none; }
+.movement-time, .movement-type { font-family: var(--mono); color: var(--texto-fraco); }
+.movement-name { color: var(--texto); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.movement-confidence { font: 0.58rem var(--mono); text-transform: uppercase; color: var(--verde); }
+.movement-confidence.probable { color: var(--alerta); }
+.movement-empty { display: block !important; color: var(--texto-fraco); }
+.movement-button { all: unset; cursor: pointer; display: contents; }
+.traffic-footer { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 0.8rem; }
+.traffic-footer p { margin: 0; max-width: 78ch; color: var(--texto-fraco); font-size: 0.74rem; }
+
+.traffic-shell:fullscreen { width: 100vw; height: 100vh; grid-template-columns: minmax(0, 1fr) 290px; border: 0; border-radius: 0; }
+.traffic-shell:fullscreen .traffic-map-wrap { min-height: 100vh; }
+
+.aircraft-dialog { width: min(520px, calc(100vw - 2rem)); padding: 0; border: var(--borda); border-radius: var(--raio); background: #0a131e; color: var(--texto); box-shadow: 0 28px 90px rgba(0,0,0,.72); }
+.aircraft-dialog::backdrop { background: rgba(1, 5, 8, 0.78); backdrop-filter: blur(5px); }
+.dialog-close { position: absolute; z-index: 2; right: 0.7rem; top: 0.65rem; width: 36px; height: 36px; border: var(--borda); border-radius: 50%; background: #07111b; color: var(--texto-suave); font-size: 1.4rem; cursor: pointer; }
+.aircraft-detail { padding: 1.3rem; }
+.aircraft-detail-kicker { margin: 0 0 0.25rem; color: var(--ciano); font: 0.65rem var(--mono); letter-spacing: 0.14em; text-transform: uppercase; }
+.aircraft-detail h3 { margin: 0; font-size: 1.55rem; }
+.aircraft-detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; margin-top: 1rem; border: var(--borda); border-radius: 9px; overflow: hidden; background: var(--azul-borda); }
+.aircraft-detail-grid div { padding: 0.7rem; background: #08121c; }
+.aircraft-detail-grid span { display: block; color: var(--texto-fraco); font: 0.58rem var(--mono); text-transform: uppercase; }
+.aircraft-detail-grid strong { display: block; margin-top: 0.25rem; font: 0.88rem var(--mono); color: var(--texto); }
+.aircraft-photo { margin: 1rem 0 0; }
+.aircraft-photo img { display: block; width: 100%; max-height: 280px; object-fit: cover; border-radius: 9px; }
+.aircraft-photo figcaption { margin-top: 0.35rem; color: var(--texto-fraco); font-size: 0.68rem; }
+.photo-loading { margin: 1rem 0 0; color: var(--texto-fraco); font: 0.7rem var(--mono); }
+.history-list { margin-top: 1rem; max-height: 62vh; overflow: auto; border: var(--borda); border-radius: var(--raio-peq); }
 
 /* --------------------------------------------------------------------------
    Seções
@@ -936,6 +1059,11 @@ h2::before {
   .status-row { grid-template-columns: minmax(0, 1fr) auto; row-gap: 0.5rem; }
   .status-latency { grid-column: 1 / 2; text-align: left; min-width: 0; }
   .status-row .chip { grid-column: 2 / 3; grid-row: 1 / 3; align-self: center; }
+  .traffic-shell { grid-template-columns: 1fr; }
+  .traffic-sidebar { border-left: 0; border-top: var(--borda); }
+  .movement-grid { grid-template-columns: 1fr; }
+  .traffic-shell:fullscreen { grid-template-columns: 1fr; overflow: auto; }
+  .traffic-shell:fullscreen .traffic-map-wrap { min-height: 70vh; }
 }
 
 @media (max-width: 620px) {
@@ -953,6 +1081,13 @@ h2::before {
   .btn-small { min-height: 44px; width: 100%; }
   .metar-bruto { font-size: 0.82rem; }
   .metar-data-utc { display: block; margin-top: 0.05rem; }
+  .traffic-head-actions { width: 100%; justify-content: space-between; }
+  .traffic-map-wrap { min-height: 430px; }
+  .traffic-search-row { flex-direction: column; }
+  .movement-list li { grid-template-columns: 3rem minmax(0, 1fr) auto; }
+  .movement-confidence { display: none; }
+  .traffic-footer { align-items: stretch; flex-direction: column; }
+  .traffic-footer .btn { width: 100%; }
 }
 
 @media (max-width: 380px) {

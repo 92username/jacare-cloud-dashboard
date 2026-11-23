@@ -1,9 +1,12 @@
-name: Deploy jacare.cloud
+name: Deploy manual jacare.cloud
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
+    inputs:
+      image_sha:
+        description: SHA completo da imagem já publicada no GHCR
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -13,40 +16,15 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  validar:
-    name: Validar site
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Validador de estrutura e acessibilidade
-        run: python3 tools/validate.py dashboard-v1
-
-      - name: Sintaxe do JavaScript
-        run: |
-          node --check dashboard-v1/assets/app.js
-          node --check dashboard-v1/assets/metar.js
-
-      - name: Autoteste do coletor METAR
-        run: python3 metar/collect.py --autoteste
-
-      - name: Nenhum dado gerado pode ir para produção
-        run: |
-          if [ -e dashboard-v1/data ]; then
-            echo "::error::dashboard-v1/data/ está versionado — dado do coletor não pode ser publicado a partir do repositório"
-            exit 1
-          fi
-          echo "dashboard-v1/data/ ausente, como esperado"
-
   deploy:
-    name: Publicar na VPS
-    needs: validar
+    name: Publicar imagem na VPS
     runs-on: ubuntu-latest
     environment: producao
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Validar tag solicitada
+        env:
+          IMAGE_SHA: ${{ inputs.image_sha }}
+        run: '[[ "$IMAGE_SHA" =~ ^[0-9a-f]{40}$ ]]'
 
       - name: Preparar chave SSH
         run: |
@@ -54,64 +32,18 @@ jobs:
           install -m 700 -d ~/.ssh
           printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
-          echo "known_hosts: $(wc -l < ~/.ssh/known_hosts) entrada(s)"
+          printf '%s\n' "${{ secrets.VPS_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
 
-      - name: Enviar site para a área de staging
-        run: |
-          set -euo pipefail
-          rsync -az --delete --exclude 'data/' \
-            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes" \
-            dashboard-v1/ "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/srv/jacare-deploy/staging/"
-          echo "staging atualizado com o commit ${GITHUB_SHA}"
-
-      - name: Aplicar em produção (backup + rsync + verificação)
+      - name: Aplicar imagem e verificar health check
+        env:
+          IMAGE_SHA: ${{ inputs.image_sha }}
         run: |
           set -euo pipefail
           ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes \
             "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
-            'sudo -n /usr/local/bin/jacare-deploy.sh apply'
+            "sudo -n /usr/local/bin/jacare-container-deploy.sh '$IMAGE_SHA'"
 
-      - name: Conferir o site publicado
+      - name: Conferir publicação externa
         run: |
-          set -uo pipefail
-          set +e   # o runner executa o passo com bash -e: sem isso, o curl que falha aborta antes do if
-          url=https://jacare.cloud/
-          local_sha=$(sha256sum dashboard-v1/index.html | cut -d' ' -f1)
-          for tentativa in 1 2 3 4 5; do
-            http=$(curl -sS --compressed --max-time 20 -o /tmp/live.html -w '%{http_code}' "$url")
-            rc=$?
-            if [ "$rc" -ne 0 ]; then
-              echo "tentativa $tentativa: falha de rede no runner (curl exit $rc) — aguardando"
-              sleep 5
-              continue
-            fi
-            echo "tentativa $tentativa: HTTP $http"
-            [ "$http" = "200" ] || { sleep 5; continue; }
-            live_sha=$(sha256sum /tmp/live.html | cut -d' ' -f1)
-            echo "index.html: repo=$local_sha produção=$live_sha"
-            if [ "$live_sha" != "$local_sha" ]; then
-              echo "::error::index.html servido difere do commit"
-              exit 1
-            fi
-            echo "conferência externa ok"
-            exit 0
-          done
-          if [ "$rc" -ne 0 ]; then
-            echo "::warning::conferência externa não pôde ser feita (rede do runner). A verificação byte a byte feita no servidor já passou."
-            exit 0
-          fi
-          echo "::error::site não respondeu 200 em 5 tentativas"
-          exit 1
-
-      - name: Resumo
-        if: always()
-        run: |
-          {
-            echo "### Deploy jacare.cloud"
-            echo ""
-            echo "- commit: \`${GITHUB_SHA}\`"
-            echo "- publica: \`dashboard-v1/\` → \`/var/www/jacare.cloud\` na VPS"
-            echo "- preserva: \`data/\` (METAR do coletor) e \`index.html.backup\`"
-            echo "- rollback: \`ssh <vps> 'sudo /usr/local/bin/jacare-deploy.sh rollback'\`"
-          } >> "$GITHUB_STEP_SUMMARY"
+          set -euo pipefail
+          curl --fail --silent --show-error --max-time 20 https://jacare.cloud/healthz

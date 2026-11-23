@@ -1,0 +1,10 @@
+.git
+.github
+target
+var
+docs
+deploy
+metar
+systemd
+tools
+*.md

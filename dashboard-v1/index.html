@@ -8,6 +8,8 @@
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#060b12">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.7.1/dist/maplibre-gl.css">
 <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
@@ -46,7 +48,7 @@
 
 <main id="conteudo">
 
-  <section class="hero" aria-labelledby="titulo">
+  <section class="hero layout-hero" aria-labelledby="titulo">
     <div class="hero-grid">
       <div class="hero-copy">
         <p class="eyebrow">
@@ -83,7 +85,69 @@
     </div>
   </section>
 
-  <section class="section" aria-labelledby="titulo-sistemas">
+  <section class="section traffic-section layout-traffic" aria-labelledby="titulo-trafego">
+    <div class="section-head traffic-heading">
+      <div>
+        <h2 id="titulo-trafego" data-i18n="traffic.title">Tráfego aéreo — SBJR</h2>
+        <p class="traffic-intro" data-i18n="traffic.intro">Aeronaves ADS-B abaixo de 6.000 ft no entorno de Jacarepaguá.</p>
+      </div>
+      <div class="traffic-head-actions">
+        <span class="chip chip-wait" id="traffic-status" data-i18n-dynamic>conectando</span>
+        <button class="btn btn-small" type="button" id="traffic-fullscreen" data-i18n="traffic.fullscreen">Tela cheia</button>
+      </div>
+    </div>
+
+    <div class="traffic-shell" id="traffic-shell">
+      <div class="traffic-map-wrap">
+        <div id="traffic-map" class="traffic-map" role="application" aria-label="Mapa do tráfego aéreo no entorno do Aeroporto de Jacarepaguá"></div>
+        <div class="traffic-map-topline" aria-hidden="true">
+          <span>SBJR</span><span>ALT &lt; 6000 FT</span><span>20 S</span>
+        </div>
+        <div class="traffic-legend">
+          <span><i class="legend-dot legend-arrival"></i><span data-i18n="traffic.descending">descendo</span></span>
+          <span><i class="legend-dot legend-departure"></i><span data-i18n="traffic.climbing">subindo</span></span>
+          <span><i class="legend-dot legend-level"></i><span data-i18n="traffic.level">nivelado</span></span>
+        </div>
+        <p class="traffic-demo" id="traffic-demo" hidden data-i18n="traffic.demo">Prévia local · posições simuladas</p>
+      </div>
+
+      <aside class="traffic-sidebar" aria-label="Resumo do tráfego">
+        <div class="traffic-now">
+          <span class="traffic-now-value" id="traffic-count">—</span>
+          <span class="traffic-now-label" data-i18n="traffic.now">aeronaves agora</span>
+          <span class="traffic-updated" id="traffic-updated">aguardando dados</span>
+        </div>
+        <label class="traffic-search-label" for="traffic-search" data-i18n="traffic.searchLabel">Pesquisar aeronave observada</label>
+        <div class="traffic-search-row">
+          <input id="traffic-search" class="traffic-search" type="search" autocomplete="off" placeholder="Matrícula, callsign ou hex" data-i18n-placeholder="traffic.searchPlaceholder">
+          <button class="btn btn-small" id="traffic-search-button" type="button" data-i18n="traffic.search">Buscar</button>
+        </div>
+        <div class="traffic-stats" aria-label="Estatísticas do dia">
+          <div><strong id="stat-movements">—</strong><span data-i18n="traffic.movements">movimentos</span></div>
+          <div><strong id="stat-arrivals">—</strong><span data-i18n="traffic.arrivals">chegadas</span></div>
+          <div><strong id="stat-departures">—</strong><span data-i18n="traffic.departures">partidas</span></div>
+          <div><strong id="stat-aircraft">—</strong><span data-i18n="traffic.distinct">aeronaves</span></div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="movement-grid">
+      <div class="movement-panel">
+        <div class="movement-title"><h3 data-i18n="traffic.latestArrivals">Últimas chegadas</h3><span>ARR</span></div>
+        <ol class="movement-list" id="traffic-arrivals"><li class="movement-empty">aguardando dados…</li></ol>
+      </div>
+      <div class="movement-panel">
+        <div class="movement-title"><h3 data-i18n="traffic.latestDepartures">Últimas partidas</h3><span>DEP</span></div>
+        <ol class="movement-list" id="traffic-departures"><li class="movement-empty">aguardando dados…</li></ol>
+      </div>
+    </div>
+    <div class="traffic-footer">
+      <p data-i18n="traffic.disclaimer">Dados comunitários ADS-B/MLAT, sujeitos a omissões e imprecisões. Uso exclusivamente informativo.</p>
+      <button class="btn btn-ghost" type="button" id="traffic-history" data-i18n="traffic.history">Ver histórico</button>
+    </div>
+  </section>
+
+  <section class="section systems-section layout-systems" aria-labelledby="titulo-sistemas">
     <div class="section-head">
       <h2 id="titulo-sistemas" data-i18n="systems.title">Sistemas disponíveis</h2>
     </div>
@@ -164,7 +228,7 @@
     </div>
   </section>
 
-  <section class="section" aria-labelledby="titulo-metar">
+  <section class="section layout-metar" aria-labelledby="titulo-metar">
     <div class="section-head">
       <h2 id="titulo-metar" data-i18n="metar.title">Meteorologia — METAR</h2>
       <p class="section-note" data-i18n="metar.stationNote">Jacarepaguá · SBJR</p>
@@ -242,7 +306,7 @@
     </div>
   </section>
 
-  <section class="section" aria-labelledby="titulo-disponibilidade">
+  <section class="section layout-availability" aria-labelledby="titulo-disponibilidade">
     <div class="section-head">
       <h2 id="titulo-disponibilidade" data-i18n="availability.title">Disponibilidade dos serviços</h2>
       <button class="btn btn-small" type="button" id="reverificar" data-i18n="availability.refresh">Verificar novamente</button>
@@ -252,7 +316,7 @@
       <span data-i18n="availability.hint">A verificação é feita pelo seu navegador, no momento em que esta página é aberta,
       por meio de uma requisição direta a cada endereço. O resultado indica apenas se o
       servidor respondeu à requisição — não atesta a integridade interna das aplicações
-      nem substitui monitoramento contínuo. Nenhum indicador histórico é exibido.</span>
+      nem substitui monitoramento contínuo. </span>
     </p>
 
     <noscript>
@@ -309,7 +373,15 @@
   </p>
 </footer>
 
+<dialog class="aircraft-dialog" id="aircraft-dialog" aria-labelledby="aircraft-dialog-title">
+  <h2 class="sr-only" id="aircraft-dialog-title">Detalhes da aeronave</h2>
+  <button class="dialog-close" type="button" id="aircraft-dialog-close" aria-label="Fechar">×</button>
+  <div id="aircraft-dialog-content"></div>
+</dialog>
+
 <script src="assets/app.js"></script>
 <script src="assets/metar.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.7.1/dist/maplibre-gl.js"></script>
+<script src="assets/traffic.js"></script>
 </body>
 </html>

@@ -1,0 +1,24 @@
+services:
+  jacare-cloud:
+    image: ghcr.io/92username/jacare-cloud-dashboard:${JACARE_IMAGE_TAG:-main}
+    container_name: jacare-cloud
+    restart: unless-stopped
+    init: true
+    ports:
+      - "127.0.0.1:18080:8080"
+    volumes:
+      - jacare-traffic:/var/lib/jacare-cloud
+      - /var/www/jacare.cloud/data:/app/dashboard-v1/data:ro
+    environment:
+      RUST_LOG: jacare_cloud=info,tower_http=info
+      TZ: America/Sao_Paulo
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+
+volumes:
+  jacare-traffic:
